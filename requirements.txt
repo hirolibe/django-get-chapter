@@ -6,3 +6,6 @@ django-environ
 gunicorn
 psycopg2-binary
 whitenoise
+pandas
+django-widget-tweaks
+google-api-python-client

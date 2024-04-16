@@ -32,7 +32,7 @@ SECRET_KEY = 'django-insecure-se0e-t*z4*a_&#c+*v0(fctaq$w6j1%c)46wa&fy*nl@nz=&w=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["https://django-render-fx8l.onrender.com"]
 
 
 # Application definition
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'widget_tweaks',
     'app'
 ]
 

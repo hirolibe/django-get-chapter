@@ -1,15 +1,71 @@
-{% load static %}
+{% extends 'app/base.html' %}
+{% load widget_tweaks %}
 
-<!DOCTYPE html>
-<html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
-    <title>Django Render</title>
-  </head>
-  <body>
-    <h1 class="center">How to deploy Django to Render</h1>
-  </body>
-</html>
+{% block content %}
+
+<h2 class="my-4">キーワード検索</h2>
+
+<div class="table-responsive search-table">
+  <table class="table">
+    <form method="POST">
+      {% csrf_token %}
+      <tbody>
+        <tr>
+          <th scope="row">
+            <label class="control-label">検索キーワード</label>
+          </th>
+          <td>
+            {% render_field form.keyword class='form-control' placeholder='キーワード' %}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">
+            <label class="control-label">検索数</label>
+          </th>
+          <td>
+            {% render_field form.items_count class='form-control' placeholder='検索数' %}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">
+            <label class="control-label">再生回数(指定数以上の動画を検索)</label>
+          </th>
+          <td>
+            {% render_field form.viewcount class='form-control' placeholder='再生回数' %}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">
+            <label class="control-label">並び順</label>
+          </th>
+          <td>
+            {% render_field form.order class='form-control' placeholder='並び順' %}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">
+            <label class="control-label">検索開始日</label>
+          </th>
+          <td>
+            {% render_field form.search_start class='form-control' placeholder='検索開始日' %}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">
+            <label class="control-label">検索終了日</label>
+          </th>
+          <td>
+            {% render_field form.search_end class='form-control' placeholder='検索終了日' %}
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" class="text-center">
+            <button class="btn btn-warning" type="submit">検索する</button>
+          </td>
+        </tr>
+      </tbody>
+    </form>
+  </table>
+</div>
+
+{% endblock %}
