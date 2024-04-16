@@ -136,8 +136,6 @@ class IndexView(View):
       request.POST or None,
       initial={
         'items_count': 12,
-        'viewcount': 1000,
-        'order': 'viewCount',
         'search_start': datetime.today() - timedelta(days=30),
         'search_end': datetime.today(),
       }
@@ -152,9 +150,7 @@ class IndexView(View):
 
     if form.is_valid():
       keyword = form.cleaned_data['keyword']
-      items_count = form.cleaned_data['items_count']
-      viewcount = form.cleaned_data['viewcount']
-      order = form.cleaned_data['order']
+      # order = form.cleaned_data['order']
       search_start = form.cleaned_data['search_start']
       search_end = form.cleaned_data['search_end']
 
