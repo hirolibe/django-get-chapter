@@ -1,36 +1,36 @@
 {% extends 'app/base.html' %}
+{% load widget_tweaks %}
 
 {% block content %}
-
-<h4 class="mb-3">検索キーワード「{{ keyword }}」</h4>
-
-<div class="card-columns">
-  {% for index, row in youtube_data.iterrows %}
-    <div class="card" style="height: 420px;">
-      <div class="card-body">
-        <div class="embed-responsive embed-responsive-16by9 mb-3">
-          <iframe src="{{ row.url }}" allowfullscreen class="embed-responsive-item"></iframe>
-        </div>
-        <div class="d-flex">
-          <div class="profile_picture mr-3">
-            <img src="{{ row.profileImg }}" alt="" class="card-img-top rounded-circle">
-          </div>
-          <div class="">
-            <div class="mb-2 font-weight-bold">{{ row.title|safe|truncatechars:25 }}</div>  <!-- 動画タイトルを25文字表示 -->
-            <div class="mb-2">{{ row.channeltitle }}</div>
-            <div class="mb-3">{{ row.viewcount }}回視聴・{{ row.publishtime }}</div>
-            <div class="">
-              <i class="fas fa-thumbs-up text-secondary mr-2"></i><span class="mr-3">{{ row.likeCount }}</span>
-              <i class="fas fa-heart text-secondary mr-2"></i><span class="mr-3">{{ row.favoriteCount }}</span>
-              <i class="fas fa-comment text-secondary mr-2"></i><span class="mr-3">{{ row.commentCount }}</span>
-            </div>
-          </div>
+  <div>
+    <h4 class="my-3">検索キーワード「{{ keyword }}」</h4>
+    <form method="POST" action="{% url 'keyword' %}">
+      {% csrf_token %}
+      <div style="display: none;">{% render_field form.keyword class='form-control' placeholder=keyword %}</div>
+      <div style="display: none;">{% render_field form.items_count class='form-control' placeholder=items_count %}</div>
+      <div style="display: none;">{% render_field form.search_start class='form-control' placeholder=search_start %}</div>
+      <div style="display: none;">{% render_field form.search_end class='form-control' placeholder=search_end %}</div>
+      <input>{% render_field form.my_channel_id class='form-control' %}</input>
+      <button class="btn btn-success mb-3" type="submit">プレイリストを作成する</button>
+    </form>
+  </div>
+  {% for row in data %}
+  <div class="card mb-2" style="border-bottom: 1px solid black; border-top: none; border-left: none; border-right: none;">
+    <div class="row g-0 align-items-center" style="height: 100%;">
+      <div class="col-md-4" style="height: 90%;">
+        <iframe src="{{ row.chapter_url }}" allowfullscreen class="embed-responsive-item" style="width: 100%;"></iframe>
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <p class="card-text">{{ row.video_title }}</p>
+          <p class="card-text font-weight-bold">チャプタータイトル：{{ row.chapter_title }}</p>
+          <p class="card-text"><small class="text-body-secondary">{{ row.published_date }}</small></p>
         </div>
       </div>
     </div>
-    {% empty %}
-    <h4>検索にヒットした動画はありません</h4>
+  </div>
+  {% empty %}
+  <h4>検索にヒットした動画はありません</h4>
   {% endfor %}
-</div>
 
 {% endblock %}

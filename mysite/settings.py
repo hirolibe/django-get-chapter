@@ -16,6 +16,8 @@ import environ
 from decouple import config
 from dj_database_url import parse as dburl
 
+ALLOWED_HOSTS = ["django-render-fx8l.onrender.com"]
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -28,9 +30,9 @@ env.read_env(os.path.join(BASE_DIR, ".env"))
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ["django-render-fx8l.onrender.com"]
+
 
 
 # Application definition
@@ -138,3 +140,7 @@ SUPERUSER_PASSWORD = env("SUPERUSER_PASSWORD")
 YOUTUBE_API_KEY = env("YOUTUBE_API_KEY")
 
 SECRET_KEY = env("SECRET_KEY")
+
+ALLOWED_HOSTS = [env("ALLOWED_HOSTS")]
+
+CLIENT_SECRETS_FILE = os.environ.get("GOOGLE_CLIENT_SECRETS_FILE")
