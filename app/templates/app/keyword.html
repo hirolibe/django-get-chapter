@@ -10,8 +10,10 @@
       <input type="text" class="form-control" style="display: none;" value="{{ form.items_count.value }}">
       <input type="text" class="form-control" style="display: none;" value="{{ form.search_start.value }}">
       <input type="text" class="form-control" style="display: none;" value="{{ form.search_end.value }}">
-      <input type="text" class="form-control" value="{{ form.my_channel_id.value }}" placeholder="自分のチャンネルID" style="line-height: 38px;">
-      <button class="btn btn-success" type="submit">プレイリストを作成する</button>
+      <div class="mb-3">
+        <input type="text" class="form-control" value="{{ form.my_channel_id.value }}" placeholder="自分のチャンネルID" style="line-height: 38px; display: inline-block;">
+        <button class="btn btn-success" type="submit">プレイリストを作成する</button>
+      </div>
     </form>
   </div>
   {% for row in data %}

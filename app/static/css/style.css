@@ -8,7 +8,7 @@
   overflow-x: hidden;
 }
 
-#wrapper #content-wrapper #content {
+#wrapper #content-wrapper #content #block {
   flex: 1 0 auto;
 }
 
