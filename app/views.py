@@ -208,11 +208,6 @@ class IndexView(View):
 プレイリスト作成
 ---------------------------------------'''
 '''
-認証情報の設定
-'''
-credential_json = settings.CREDENTIALS_JSON
-
-'''
 メインコード
 '''
 class KeywordView(View):
