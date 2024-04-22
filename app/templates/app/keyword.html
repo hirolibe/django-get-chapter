@@ -4,7 +4,7 @@
 {% block content %}
   <div>
     <h4 class="my-3">検索キーワード「{{ keyword }}」</h4>
-    <form method="POST" action="{% url 'keyword' %}">
+    <form method="POST" action="{% url 'index' %}">
       {% csrf_token %}
       <button class="btn btn-warning mb-4" type="submit">キーワードを変更する</button>
     </form>
