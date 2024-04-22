@@ -46,6 +46,7 @@ def get_videoid_list(YOUTUBE_API, channel_id):
             pageToken=nextpagetoken, #ページ送りのトークンの設定
         )
         result = request.execute()
+        print(result['items'])
 
         # もしも動画数が50件より少ないならば、dataに情報を追加してbreak
         if len(result['items']) < 50:
