@@ -17,7 +17,7 @@ from decouple import config
 from dj_database_url import parse as dburl
 
 # ALLOWED_HOSTS = ["django-render-fx8l.onrender.com"]
-ALLOWED_HOSTS = ["＊"]
+ALLOWED_HOSTS = ["*"]
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
