@@ -20,7 +20,7 @@ from google_auth_oauthlib.flow import Flow
 変数の設定
 '''
 channel_id = "UC67Wr_9pA4I0glIxDt_Cpyw" # 両学長 リベラルアーツ大学
-fromtime = (dt.datetime.now(dt.timezone.utc)-dt.timedelta(hours=8760)).strftime('%Y-%m-%dT%H:%M:%SZ') # 1年以内にアップされた動画から検索
+fromtime = (dt.datetime.now(dt.timezone.utc)-dt.timedelta(hours=24)).strftime('%Y-%m-%dT%H:%M:%SZ') # 24時間以内にアップされた動画から検索
 
 '''
 認証情報の設定
@@ -100,7 +100,7 @@ def get_chapter_url(chapterinfo_dicts):
         for chapter_title, time in chapterinfo[1].items(): # chapterinfo = [配信日, {チャプタータイトル: 秒数, ...}, 動画タイトル]
             published_date = chapterinfo[0]
             # ISO 8601形式の日付文字列をdatetimeオブジェクトに変換
-            published_date_jp = dt.datetime.fromisoformat(published_date.replace('Z', '+00:00'))+dt.timedelta(hours=24)
+            published_date_jp = dt.datetime.fromisoformat(published_date.replace('Z', '+00:00'))+dt.timedelta(hours=9)
             # 必要な形式の文字列に変換
             formatted_date = published_date_jp.strftime('%Y-%m-%d')
             url = f'https://www.youtube.com/embed/{id}?start={time}'

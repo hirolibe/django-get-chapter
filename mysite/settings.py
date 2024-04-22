@@ -144,3 +144,8 @@ SECRET_KEY = env("SECRET_KEY")
 ALLOWED_HOSTS = [env("ALLOWED_HOSTS")]
 
 CLIENT_SECRETS_FILE = os.environ.get("GOOGLE_CLIENT_SECRETS_FILE")
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass
