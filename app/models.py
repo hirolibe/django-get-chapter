@@ -10,4 +10,4 @@ class ChapterInfo(models.Model):
     chapter_start = models.CharField('チャプター開始時間', max_length=100)
 
     def __str__(self):
-        return self.published_date, self.chapter_title
+        return f"{self.chapter_title}({self.published_date})"
