@@ -163,7 +163,7 @@ class IndexView(View):
             search_end = form.cleaned_data['search_end']
             items_count = form.cleaned_data['items_count']
 
-            chapter_all_list = ChapterInfo.objects.order_by('published_date')
+            chapter_all_list = ChapterInfo.objects.order_by('-published_date')
             chapter_search_list = []
             count = min(len(chapter_all_list), items_count)
             for i in chapter_all_list:
@@ -221,7 +221,7 @@ class KeywordView(View):
             items_count = form.cleaned_data['items_count']
             my_channel_id = form.cleaned_data['my_channel_id']
 
-            chapter_all_list = ChapterInfo.objects.order_by('published_date')
+            chapter_all_list = ChapterInfo.objects.order_by('-published_date')
             chapter_search_list = []
             count = min(len(chapter_all_list), items_count)
             for i in chapter_all_list:
