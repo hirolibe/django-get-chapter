@@ -8,7 +8,7 @@
       {% csrf_token %}
       <button class="btn btn-warning mb-4" type="submit">キーワードを変更する</button>
     </form>
-    <form method="POST" action="{% url 'keyword' %}">
+    <!-- <form method="POST" action="{% url 'keyword' %}">
       {% csrf_token %}
       <input type="text" class="form-control" style="display: none;" value="{{ form.keyword.value }}">
       <input type="text" class="form-control" style="display: none;" value="{{ form.items_count.value }}">
@@ -18,7 +18,7 @@
         <input type="text" class="form-control" value="{{ form.my_channel_id.value }}" placeholder="自分のチャンネルID" style="line-height: 38px; width: 50%; margin-right: 10px;">
         <button class="btn btn-success" type="submit">再生リスト作成</button>
       </div>
-    </form>
+    </form> -->
   </div>
   {% for row in data %}
   <div class="card mb-2" style="border-bottom: 1px solid black; border-top: none; border-left: none; border-right: none;">
