@@ -10,35 +10,29 @@
     <form method="POST">
       {% csrf_token %}
       <tbody>
-        <tr>
-          <th scope="row">
-            <div style="display: flex; justify-content: center; align-items: center;">
-              <label class="control-label">検索キーワード</label>
-            </div>
+        <tr scope="row">
+          <th class="text-center">
+            <label class="control-label mb-0" style="line-height: 38px;">ワード</label>
           </th>
           <td style="width: 50%;" class="text-center">
-            {% render_field form.keyword class='form-control text-center' placeholder='キーワード' %}
+            {% render_field form.keyword class='form-control text-center' placeholder='検索キーワード' %}
           </td>
         </tr>
-        <tr>
-          <th scope="row">
-            <div style="display: flex; justify-content: center; align-items: center;">
-              <label class="control-label mb-0">検索数</label>
-            </div>
+        <tr scope="row">
+          <th class="text-center">
+              <label class="control-label mb-0" style="line-height: 38px;">検索数</label>
           </th>
           <td style="width: 50%;" class="text-center">
             {% render_field form.items_count class='form-control text-center' placeholder='検索数' %}
           </td>
         </tr>
-        <tr>
-          <th scope="row">
-            <div style="display: flex; justify-content: center; align-items: center;">
-              <label class="control-label mb-0">検索範囲</label>
-            </div>
+        <tr scope="row">
+          <th class="text-center">
+            <label class="control-label mb-0" style="line-height: 38px;">配信日</label>
           </th>
           <td style="display: flex; justify-content: center; align-items: center;">
             <div>{% render_field form.search_start class='form-control text-center' placeholder='いつから' %}</div>
-            <span class="mx-1">〜</span>
+            <span class="mx-3">〜</span>
             <div>{% render_field form.search_end class='form-control text-center' placeholder='いつまで' %}</div>
           </td>
         </tr>
