@@ -144,7 +144,7 @@ class IndexView(View):
         form = KeywordForm(
             request.POST or None,
             initial={
-                'search_start': dt.datetime.today() - dt.timedelta(days=30),
+                'search_start': dt.datetime(2021, 11, 8),
                 'search_end': dt.datetime.today(),
                 'items_count': 30,
             }
