@@ -21,7 +21,7 @@ from google_auth_oauthlib.flow import Flow
 変数の設定
 '''
 channel_id = "UC67Wr_9pA4I0glIxDt_Cpyw" # 両学長 リベラルアーツ大学
-fromtime = (dt.datetime.now(dt.timezone.utc)-dt.timedelta(hours=7200)).strftime('%Y-%m-%dT%H:%M:%SZ') # 24時間以内にアップされた動画から検索
+fromtime = (dt.datetime.now(dt.timezone.utc)-dt.timedelta(hours=24)).strftime('%Y-%m-%dT%H:%M:%SZ') # 24時間以内にアップされた動画から検索
 
 '''
 認証情報の設定
@@ -132,8 +132,6 @@ class UpdateView(View):
         chapterinfo_dicts = get_chapter_info(videoinfo_list)
         df_data = get_chapter_url(chapterinfo_dicts)
         add_database(df_data)
-
-        return redirect('index')
 
 
 '''---------------------------------------
