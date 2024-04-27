@@ -97,7 +97,7 @@ def get_chapter_info(videoinfo_list):
 
 def get_chapter_info():
     chapterinfo_dicts = {}
-    videoinfo_list = ['vXmIeduL6W4', 'E07vGDrGjJQ', 'oBFxIERKooE', '3V0YAoXYbXQ', 'EitWcVuhisA', '9-4flC13D04', 'u4OjHCQyuuI', 'oRz8zIo3za4', 'jGeMEV9ZO7c', 'yew6F5VhOPU', 'byZ8xxwLjKU', '-N4eeHoYD2k', 'JHB8eiShfPM', '2uXFdz8S0hY', '78y35YgVNp4', '6Yj68ni-VKY', 'Xw2RYDbQc04', 'jK4QZbjGizA', 'kuUMkAPrzvY', 'PyxzqGoXg20', 'b3RQLQ1OCOY', 'rmXkmb-UZ1c', 'KHWDopDKW6Y', '_E78qn6HW28', '7K7i2ca6pRQ', 'lVmwP9viowc', '7tqRuz1Qlv4', 'BmLxrAyb_dI', 'JSSKe_vY9aE', '7M7giTQlGpE', 'p8Ny8VOwUCo', 'upxJH1OA0w8', 'T9Mhyfwq3RA', 'OIOj6ra17rI', '7jWvhkIFEWY', 'F-hR1-lRX3c', 'G4FariUmRr0', 'Jvw70WJLBFE', 'BWzjuWQCDJA', 'KG6S3incA3U', 'a-eIFPhBUkE', 'QUczDmQBTLQ', 'pQKgLbkHANY', '3mpyE-WFi7U', 'i86gEdmxVYI', '5DRzxnHBCIA', 'Zbf25dNliT8', 'rhW0Hng-LEI', 'ZmQNfMUXeXo', '-Nm8XwHD1Bw', 'siJnevtY5q4', 'LfbuLDjg7fg', '84pbhXTyyfU', 'TxatgUjyCaI', 'XjlHs0LPa34', '3_CfItLrHDw', 'O5HqF9j8Acs', '1ip3hD3Azl0', 'Logv1C0QqyQ', 'rddddzTOfTc', 'q7aN3nTselc', '72ObVFdE2A4', 'j3otgUpdtVk', 'tqARb428DvA', 'BjjDoIg2EEY', 'Y8tfDPWPkoY', 'h36pd-bn3j0', 'JV8u2MaGv6I', 'T7azvsCgpE0', 'DlprUgbAPqg', 'AyRMX64qoFU', 'XPbSAmUmizM', 'bM9nXnX7bqo', 'S7rqBbY4Mao', 'b1KarQwi-os', 'WgSvEruaVAg', 'PstbF2UlAvQ', 'yUfSj7KCraY', 's7M9VIydcxA', 'FWM16a9tz9s', 'IbmIkQCtvVU', 'qrSqewM-Nhc', 'IYzq13DToPY', 'wDCBHeFUmhY', '2itXc8YM10Q', 'GVCaPXUVzTQ', 'k5urxTdT1Bg', '5Sim0IMQWeU', 'vOVF-TTCHxY', 'ev3HGZlwFdU', 'rd0xCmBSBPk', 'kMoV915kGLE', '5kvSNdGPuho', 'JdMXaxzdpNE', 'Qr4VQ7qK_fk', 'zGQtUUrygXo', 'tsyr6onxowI', '5pn5tp7vdD8', 'SB-Y_6q160c', 'H_JR5ijtbYg', 'hC7ezHSHj3Y', '8kxBK9VrSvo', 'd_XehFLvvqM', 'VKL4FikHfaM', '3LcCNiFMoOY', '2xCVfc3RY70', '3I1M5ewif90', 'CDpXajTDmY0', 'lpfOPk9TGPY', '2BfaCj5Izjo', 'g4tAp3P6x3A', 'ewowWN4TlmA', 't1ag3m8gLRE', 's0yc1PoDN44', 'Kwn8LvMiTec', 'F7TaVWksMBQ', '5RbZgn3Ql5c', 'Z0tF2x-raDw', 'lYYSCJQHcnw', 'DnQyjLKqZH4', 'RBmN6YZ2XU0']
+    videoinfo_list = ['4XxBfq1ZQro']
     for videoinfo in videoinfo_list:
         request = YOUTUBE_API.videos().list(
             part='snippet',
@@ -203,20 +203,21 @@ class IndexView(View):
             search_end = form.cleaned_data['search_end']
             items_count = form.cleaned_data['items_count']
 
-            chapter_all_list = ChapterInfo.objects.order_by('-published_date')
+            chapter_all_list = ChapterInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'chapter_title', 'chapter_url', 'published_date', 'chapter_start')
+            print(chapter_all_list)
             chapter_search_list = []
             count = min(len(chapter_all_list), items_count)
             for i in chapter_all_list:
                 if count > 0:
-                    if search_start <= i.published_date <= search_end:
-                        if keyword in i.chapter_title:
+                    if search_start <= i[4] <= search_end:
+                        if keyword in i[2]:
                             chapter_search_list.append([
-                                i.video_id,
-                                i.video_title,
-                                i.chapter_title,
-                                i.chapter_url,
-                                i.published_date,
-                                i.chapter_start,
+                                i[0],
+                                i[1],
+                                i[2],
+                                i[3],
+                                i[4],
+                                i[5],
                             ])
                             count -= 1
                 else:
