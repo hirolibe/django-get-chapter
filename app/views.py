@@ -159,10 +159,10 @@ class IndexView(View):
         form = KeywordForm(request.POST or None)
 
         if form.is_valid():
-            keyword = form.initial['keyword']
-            search_start = form.initial['search_start']
-            search_end = form.initial['search_end']
-            items_count = form.initial['items_count']
+            keyword = form.cleaned_data['keyword']
+            search_start = form.cleaned_data['search_start']
+            search_end = form.cleaned_data['search_end']
+            items_count = form.cleaned_data['items_count']
 
             chapter_all_list = ChapterInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'chapter_title', 'chapter_url', 'published_date', 'chapter_start')
             chapter_search_list = []
