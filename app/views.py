@@ -195,6 +195,7 @@ class IndexView(View):
 
             return render(request, 'app/keyword.html', {
                 'keyword': keyword,
+                'hit_number': len(data),
                 'data': data,
                 'search_start': search_start,
                 'search_end': search_end,
