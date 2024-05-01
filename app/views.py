@@ -159,13 +159,12 @@ class IndexView(View):
         form = KeywordForm(request.POST or None)
 
         if form.is_valid():
-            keyword = form.cleaned_data['keyword']
-            search_start = form.cleaned_data['search_start']
-            search_end = form.cleaned_data['search_end']
-            items_count = form.cleaned_data['items_count']
+            keyword = form.initial['keyword']
+            search_start = form.initial['search_start']
+            search_end = form.initial['search_end']
+            items_count = form.initial['items_count']
 
             chapter_all_list = ChapterInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'chapter_title', 'chapter_url', 'published_date', 'chapter_start')
-            print(chapter_all_list)
             chapter_search_list = []
             count = min(len(chapter_all_list), items_count)
             for i in chapter_all_list:
@@ -207,96 +206,62 @@ class IndexView(View):
 
 
 '''---------------------------------------
-プレイリスト作成
+学長父の動画リスト表示
 ---------------------------------------'''
 '''
 メインコード
 '''
-class KeywordView(View):
-    def post(self, request, *args, **kwargs):
-        form = KeywordForm(request.POST or None)
-        if form.is_valid():
-            keyword = form.cleaned_data['keyword']
-            search_start = form.cleaned_data['search_start']
-            search_end = form.cleaned_data['search_end']
-            items_count = form.cleaned_data['items_count']
-            my_channel_id = form.cleaned_data['my_channel_id']
+class GakuchoFatherView(View):
+    def get(self, request, *args, **kwargs):
+        form = KeywordForm(
+            request.POST or None,
+            initial={
+                'keyword': '学長父',
+                'search_start': dt.datetime(2018, 10, 6),
+                'search_end': dt.datetime.today(),
+                'items_count': 1000,
+            }
+        )
 
-            chapter_all_list = ChapterInfo.objects.order_by('-published_date')
-            chapter_search_list = []
-            count = min(len(chapter_all_list), items_count)
-            for i in chapter_all_list:
-                if count > 0:
-                    if search_start <= i.published_date <= search_end:
-                        if keyword in i.chapter_title:
-                            chapter_search_list.append([
-                                i.video_id,
-                                i.video_title,
-                                i.chapter_title,
-                                i.chapter_url,
-                                i.published_date,
-                                i.chapter_start,
-                            ])
-                            count -= 1
-                else:
-                    break
-            chapter_search_df = pd.DataFrame(chapter_search_list, columns=[
-                'video_id',
-                'video_title',
-                'chapter_title',
-                'chapter_url',
-                'published_date',
-                'chapter_start',
-            ])
-            data = chapter_search_df.to_dict(orient='records')
+        keyword = form.initial['keyword']
+        search_start = form.initial['search_start']
+        search_end = form.initial['search_end']
+        items_count = form.initial['items_count']
 
-            # 認証情報の設定
-            flow = Flow.from_client_secrets_file(
-                settings.CLIENT_SECRETS_FILE,
-                scopes=['https://www.googleapis.com/auth/youtube']
-                )
-            # 認証コードを受け取るためにリダイレクトされるポートを指定して、認証フローを実行
-            authorization_url, state = flow.authorization_url(
-            access_type='offline', prompt='consent', include_granted_scopes='true')
-            # ユーザーに認証してもらう
-            print("Go to the following URL and authorize access:")
-            print(authorization_url)
-            # ユーザーが認証した後、リダイレクトURIで提供された認証コードを取得して認証フローを完了
-            flow.fetch_token(authorization_response=input("Enter the authorization code: "))
-            credentials = flow.credentials
-            youtube = build('youtube', 'v3', credentials=credentials)
+        chapter_all_list = ChapterInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'chapter_title', 'chapter_url', 'published_date', 'chapter_start')
+        chapter_search_list = []
+        count = min(len(chapter_all_list), items_count)
+        for i in chapter_all_list:
+            if count > 0:
+                if search_start.date() <= i[4] <= search_end.date():
+                    if keyword in i[2]:
+                        chapter_search_list.append([
+                            i[0],
+                            i[1],
+                            i[2],
+                            i[3],
+                            i[4],
+                            i[5],
+                        ])
+                        count -= 1
+            else:
+                break
+        chapter_search_df = pd.DataFrame(chapter_search_list, columns=[
+            'video_id',
+            'video_title',
+            'chapter_title',
+            'chapter_url',
+            'published_date',
+            'chapter_start',
+        ])
 
-            # プレイリストの作成
-            request = youtube.playlists().insert(
-                part="snippet",
-                body={
-                "snippet": {
-                    "channelId": my_channel_id,
-                    "title": keyword,
-                }
-                }
-            )
-            response = request.execute()
-            playlist_id = response['id']
+        data = chapter_search_df.to_dict(orient='records')
 
-            for row in data:
-                #プレイリストに検索した動画を登録
-                request = youtube.playlistItems().insert(
-                    part="snippet",
-                    body={
-                    "snippet": {
-                        "playlistId": playlist_id,
-                        "resourceId": {
-                        "kind": "youtube#video",
-                        "videoId": row.video_id,
-                        }
-                    }
-                    }
-                )
-                request.execute()
-
-            return redirect('keyword')
-
-        else:
-            # フォームのエラーをここで処理する
-            pass
+        return render(request, 'app/keyword.html', {
+            'keyword': keyword,
+            'hit_number': len(data),
+            'data': data,
+            'search_start': search_start,
+            'search_end': search_end,
+            'items_count': items_count,
+        })
