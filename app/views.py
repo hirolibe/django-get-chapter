@@ -219,7 +219,7 @@ class GakuchoFatherView(View):
                 'keyword': '学長父',
                 'search_start': dt.datetime(2018, 10, 6),
                 'search_end': dt.datetime.today(),
-                'items_count': 1000,
+                'items_count': 100,
             }
         )
 
