@@ -28,4 +28,18 @@
   <h5>検索にヒットした動画はありません</h5>
   {% endfor %}
 
+  {% if hit_number > 30 %}
+    <nav aria-label="Page navigation">
+      <ul class="pagination">
+        <li class="page-item{% if page_number == 1 %} disabled{% endif %}">
+          <a class="page-link" href="{% url 'index' %}?page={{ page_number|add:'-1' }}">前へ</a>
+        </li>
+        <li class="page-item active"><a class="page-link" href="#">{{ page_number }}</a></li>
+        <li class="page-item{% if page_number == hit_number|divisibleby:30 %} disabled{% endif %}">
+          <a class="page-link" href="{% url 'index' %}?page={{ page_number|add:'1' }}">次へ</a>
+        </li>
+      </ul>
+    </nav>
+  {% endif %}
+
 {% endblock %}
