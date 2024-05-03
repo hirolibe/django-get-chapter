@@ -31,7 +31,7 @@
     {% endfor %}
 
     <nav aria-label="Page navigation">
-      <ul class="pagination">
+      <ul class="pagination pagination-sm">
         {% if page_data.has_previous %}
           <li class="page-item">
             <form action="{% url 'index' %}?page={{ page_data.previous_page_number }}" method="post">
