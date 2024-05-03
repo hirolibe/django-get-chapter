@@ -32,45 +32,72 @@
 
     <nav aria-label="Page navigation">
       <ul class="pagination pagination-sm">
-        {% if page_data.has_previous %}
-          <li class="page-item">
-            <form action="{% url 'index' %}?page={{ page_data.previous_page_number }}" method="post">
+        {% if page_data.number == 1 %}
+          <li class="page-item active">
+            <form action="{% url 'index' %}?page=1" method="post">
               {% csrf_token %}
               <input type="hidden" name="keyword" value="{{ keyword }}">
-              <button type="submit" class="page-link">前の30件</button>
+              <button type="submit" class="page-link">1</button>
+            </form>
+          </li>
+        {% else %}
+          <li class="page-item">
+            <form action="{% url 'index' %}?page=1" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="keyword" value="{{ keyword }}">
+              <button type="submit" class="page-link">1</button>
             </form>
           </li>
         {% endif %}
 
         {% for page in page_data.paginator.page_range %}
-          {% if page == page_data.number %}
-            <li class="page-item active">
-              <form action="{% url 'index' %}?page={{ page }}" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="keyword" value="{{ keyword }}">
-                <button type="submit" class="page-link">{{ page }}</button>
-              </form>
-            </li>
-          {% else %}
-            <li class="page-item">
-              <form action="{% url 'index' %}?page={{ page }}" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="keyword" value="{{ keyword }}">
-                <button type="submit" class="page-link">{{ page }}</button>
-              </form>
-            </li>
+          {% if page >= 2 and page <= max_page_number|add:-1 %}
+            {% if page == page_data.number %}
+              <li class="page-item active">
+                <form action="{% url 'index' %}?page={{ page }}" method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="keyword" value="{{ keyword }}">
+                  <button type="submit" class="page-link">{{ page }}</button>
+                </form>
+              </li>
+            {% elif page_data.number >= 5 and page == 2 %}
+              <li class="page-item">
+                  <button type="text" class="page-link">･･･</button>
+              </li>
+            {% elif page_data.number <= max_page_number|add:-4 and page == max_page_number|add:-1 %}
+              <li class="page-item">
+                  <button type="text" class="page-link">･･･</button>
+              </li>
+            {% elif page >= page_data.number|add:-2 and page <= page_data.number|add:2 %}
+              <li class="page-item">
+                <form action="{% url 'index' %}?page={{ page }}" method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="keyword" value="{{ keyword }}">
+                  <button type="submit" class="page-link">{{ page }}</button>
+                </form>
+              </li>
+            {% endif %}
           {% endif %}
         {% endfor %}
 
-        {% if page_data.has_next %}
-          <li class="page-item">
-            <form action="{% url 'index' %}?page={{ page_data.next_page_number }}" method="post">
+        {% if page_data.number == max_page_number %}
+          <li class="page-item active">
+            <form action="{% url 'index' %}?page={{ page }}" method="post">
               {% csrf_token %}
               <input type="hidden" name="keyword" value="{{ keyword }}">
-              <button type="submit" class="page-link">次の30件</button>
+              <button type="submit" class="page-link">{{ page }}</button>
+            </form>
+          </li>
+        {% else %}
+          <li class="page-item">
+            <form action="{% url 'index' %}?page={{ page }}" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="keyword" value="{{ keyword }}">
+              <button type="submit" class="page-link">{{ page }}</button>
             </form>
           </li>
         {% endif %}
+
       </ul>
     </nav>
 
