@@ -28,7 +28,6 @@ class IndexView(View):
         page = int(page_str) if page_str else 1
         page_data = paginator.page(page)
         max_page_number = max(page_data.paginator.page_range)
-        print(max_page_number)
 
         return render(request, 'app/index.html', {
             'keyword': keyword,
@@ -52,12 +51,14 @@ class GakuchoFatherView(View):
         page_str = request.GET.get('page')
         page = int(page_str) if page_str else 1
         page_data = paginator.page(page)
+        max_page_number = max(page_data.paginator.page_range)
 
         return render(request, 'app/index.html', {
             'keyword': keyword,
             'hit_number': len(filtered_chapter),
             'page': page,
             'page_data': page_data,
+            'max_page_number': max_page_number,
         })
 
 
