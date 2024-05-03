@@ -4,7 +4,8 @@
 {% block content %}
   {% if keyword %}
     <div>
-      <h4 class="my-3">検索キーワード「{{ keyword }}」({{ hit_number }}件ヒット)</h4>
+      <h5 class="my-3">検索キーワード「{{ keyword }}」</h5>
+      <h5 class="my-3">検索結果：{{ hit_number }}件</h5>
       <form method="POST" action="{% url 'index' %}" class="d-flex mb-4">
         {% csrf_token %}
         <input name="keyword" value="{{ keyword }}" style="height: 38px;" class="mr-1">
@@ -105,7 +106,7 @@
 
   {% else %}
     <div>
-      <h4 class="my-3">検索キーワード</h4>
+      <h5 class="my-3">検索キーワード</h5>
       <form method="POST" action="{% url 'index' %}" class="d-flex mb-4">
         {% csrf_token %}
         <input name="keyword" style="height: 38px;" class="mr-1" placeholder="キーワードを入力">
