@@ -2,53 +2,87 @@
 {% load widget_tweaks %}
 
 {% block content %}
+  {% if keyword %}
+    <div>
+      <h4 class="my-3">検索キーワード「{{ keyword }}」({{ hit_number }}件ヒット)</h4>
+      <form method="POST" action="{% url 'index' %}" class="d-flex mb-4">
+        {% csrf_token %}
+        <input name="keyword" value="{{ keyword }}" style="height: 38px;" class="mr-1">
+        <button class="btn btn-primary mr-1" type="submit">検索</button>
+      </form>
+    </div>
+    {% for row in page_data.object_list %}
+      <div class="card mb-2" style="border-bottom: 1px solid black; border-top: none; border-left: none; border-right: none;">
+        <div class="row g-0 align-items-center" style="height: 100%;">
+          <div class="col-md-4" style="height: 90%;">
+            <iframe src="{{ row.3 }}" allowfullscreen class="embed-responsive-item" style="width: 100%;"></iframe>
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <p class="card-text">{{ row.1 }}</p>
+              <p class="card-text font-weight-bold">チャプタータイトル：{{ row.2 }}</p>
+              <p class="card-text"><small class="text-body-secondary">{{ row.4 }}</small></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+    <h5>検索にヒットした動画はありません</h5>
+    {% endfor %}
 
-<h2 class="my-4">キーワード検索</h2>
+    <nav aria-label="Page navigation">
+      <ul class="pagination">
+        {% if page_data.has_previous %}
+          <li class="page-item">
+            <form action="?page={{ page_data.previous_page_number }}" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="keyword" value="{{ keyword }}">
+              <button type="submit" class="page-link">前の30件</button>
+            </form>
+          </li>
+        {% endif %}
 
-<div class="table-responsive search-table">
-  <table class="table" style="width: 50%; font-size: 14px;">
-    <form method="POST">
-      {% csrf_token %}
-      <tbody>
-        <tr scope="row">
-          <th class="text-center px-0" style="width: 20%;">
-            <label class="control-label mb-0" style="line-height: 38px; min-width: 48px;">ワード</label>
-          </th>
-          <td>
-            {% render_field form.keyword class='form-control text-center' style='font-size: 14px;' placeholder='検索キーワード' %}
-          </td>
-        </tr>
-        <tr scope="row">
-          <th class="text-center px-0" style="width: 20%;">
-              <label class="control-label mb-0" style="line-height: 38px;">検索数</label>
-          </th>
-          <td>
-            {% render_field form.items_count class='form-control text-center' style='font-size: 14px;' placeholder='検索数' %}
-          </td>
-        </tr>
-        <tr scope="row">
-          <th class="text-center px-0" style="width: 20%;">
-            <label class="control-label mb-0" style="line-height: 38px;">配信日</label>
-          </th>
-          <td style="display: flex; justify-content: center; align-items: center;">
-            <div>{% render_field form.search_start class='form-control text-center' style='font-size: 14px;' placeholder='いつから' %}</div>
-            <span class="mx-1">〜</span>
-            <div>{% render_field form.search_end class='form-control text-center' style='font-size: 14px;' placeholder='いつまで' %}</div>
-          </td>
-        </tr>
-        <tr>
-          <td style="display: none;">
-            {% render_field form.my_channel_id class='form-control' %}
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2" class="text-center">
-            <button class="btn btn-warning" type="submit">検索する</button>
-          </td>
-        </tr>
-      </tbody>
-    </form>
-  </table>
-</div>
+        {% for page in page_data.paginator.page_range %}
+          {% if page == page_data.number %}
+            <li class="page-item active">
+              <form action="?page={{ page }}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="keyword" value="{{ keyword }}">
+                <button type="submit" class="page-link">{{ page }}</button>
+              </form>
+            </li>
+          {% else %}
+            <li class="page-item">
+              <form action="?page={{ page }}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="keyword" value="{{ keyword }}">
+                <button type="submit" class="page-link">{{ page }}</button>
+              </form>
+            </li>
+          {% endif %}
+        {% endfor %}
+
+        {% if page_data.has_next %}
+          <li class="page-item">
+            <form action="?page={{ page_data.next_page_number }}" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="keyword" value="{{ keyword }}">
+              <button type="submit" class="page-link">次の30件</button>
+            </form>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+
+  {% else %}
+    <div>
+      <h4 class="my-3">検索キーワード</h4>
+      <form method="POST" action="{% url 'index' %}" class="d-flex mb-4">
+        {% csrf_token %}
+        <input name="keyword" style="height: 38px;" class="mr-1" placeholder="キーワードを入力">
+        <button class="btn btn-primary mr-1" type="submit">検索</button>
+      </form>
+    </div>
+  {% endif %}
 
 {% endblock %}

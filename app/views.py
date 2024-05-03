@@ -3,20 +3,65 @@ from django.views.generic import View
 from apiclient.discovery import build
 import datetime as dt
 from django.conf import settings
-import pandas as pd
 from .models import ChapterInfo
 import re
-from django.db import models
 from .forms import KeywordForm
-import os
-from google.oauth2.service_account import Credentials
-from google_auth_oauthlib.flow import Flow
+from django.core.paginator import Paginator
+
+
+
+'''---------------------------------------
+キーワード検索画面
+---------------------------------------'''
+class IndexView(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'app/index.html')
+
+
+    def post(self, request, *args, **kwargs):
+        keyword = request.POST['keyword']
+
+        chapter_all_list = ChapterInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'chapter_title', 'chapter_url', 'published_date', 'chapter_start')
+        filtered_chapter = chapter_all_list.filter(chapter_title__icontains=keyword)
+        paginator = Paginator(filtered_chapter, 30)
+        page_str = request.GET.get('page')
+        page = int(page_str) if page_str else 1
+        page_data = paginator.page(page)
+
+        return render(request, 'app/index.html', {
+            'keyword': keyword,
+            'hit_number': len(filtered_chapter),
+            'page': page,
+            'page_data': page_data,
+        })
+
+
+
+'''---------------------------------------
+学長父の動画リスト表示
+---------------------------------------'''
+class GakuchoFatherView(View):
+    def get(self, request, *args, **kwargs):
+        keyword = "学長父"
+        chapter_all_list = ChapterInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'chapter_title', 'chapter_url', 'published_date', 'chapter_start')
+        filtered_chapter = chapter_all_list.filter(chapter_title__icontains=keyword)
+        paginator = Paginator(filtered_chapter, 30)
+        page_str = request.GET.get('page')
+        page = int(page_str) if page_str else 1
+        page_data = paginator.page(page)
+
+        return render(request, 'app/index.html', {
+            'keyword': keyword,
+            'hit_number': len(filtered_chapter),
+            'page': page,
+            'page_data': page_data,
+        })
+
 
 
 '''---------------------------------------
 データベースに最新の動画のチャプター情報を追加
 ---------------------------------------'''
-
 '''
 変数の設定
 '''
@@ -135,134 +180,3 @@ class UpdateView(View):
         add_database(df_data)
 
         return redirect('index')
-
-
-'''---------------------------------------
-データベースからチャプタータイトルをキーワード検索
----------------------------------------'''
-class IndexView(View):
-    def get(self, request, *args, **kwargs):
-        form = KeywordForm(
-            request.POST or None,
-            initial={
-                'search_start': dt.datetime(2018, 10, 6),
-                'search_end': dt.datetime.today(),
-                'items_count': 30,
-            }
-        )
-
-        return render(request, 'app/index.html', {
-            'form': form
-        })
-
-    def post(self, request, *args, **kwargs):
-        form = KeywordForm(request.POST or None)
-
-        if form.is_valid():
-            keyword = form.cleaned_data['keyword']
-            search_start = form.cleaned_data['search_start']
-            search_end = form.cleaned_data['search_end']
-            items_count = form.cleaned_data['items_count']
-
-            chapter_all_list = ChapterInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'chapter_title', 'chapter_url', 'published_date', 'chapter_start')
-            chapter_search_list = []
-            count = min(len(chapter_all_list), items_count)
-            for i in chapter_all_list:
-                if count > 0:
-                    if search_start <= i[4] <= search_end:
-                        if keyword in i[2]:
-                            chapter_search_list.append([
-                                i[0],
-                                i[1],
-                                i[2],
-                                i[3],
-                                i[4],
-                                i[5],
-                            ])
-                            count -= 1
-                else:
-                    break
-            chapter_search_df = pd.DataFrame(chapter_search_list, columns=[
-                'video_id',
-                'video_title',
-                'chapter_title',
-                'chapter_url',
-                'published_date',
-                'chapter_start',
-            ])
-
-            data = chapter_search_df.to_dict(orient='records')
-
-            return render(request, 'app/keyword.html', {
-                'keyword': keyword,
-                'hit_number': len(data),
-                'data': data,
-                'search_start': search_start,
-                'search_end': search_end,
-                'items_count': items_count,
-            })
-
-        else:
-            return redirect('index')
-
-
-'''---------------------------------------
-学長父の動画リスト表示
----------------------------------------'''
-'''
-メインコード
-'''
-class GakuchoFatherView(View):
-    def get(self, request, *args, **kwargs):
-        form = KeywordForm(
-            request.POST or None,
-            initial={
-                'keyword': '学長父',
-                'search_start': dt.datetime(2018, 10, 6),
-                'search_end': dt.datetime.today(),
-                'items_count': 30,
-            }
-        )
-
-        keyword = form.initial['keyword']
-        search_start = form.initial['search_start']
-        search_end = form.initial['search_end']
-        items_count = form.initial['items_count']
-
-        chapter_all_list = ChapterInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'chapter_title', 'chapter_url', 'published_date', 'chapter_start')
-        chapter_search_list = []
-        count = min(len(chapter_all_list), items_count)
-        for i in chapter_all_list:
-            if count > 0:
-                if search_start.date() <= i[4] <= search_end.date():
-                    if keyword in i[2]:
-                        chapter_search_list.append([
-                            i[0],
-                            i[1],
-                            i[2],
-                            i[3],
-                            i[4],
-                            i[5],
-                        ])
-                        count -= 1
-            else:
-                break
-        chapter_search_df = pd.DataFrame(chapter_search_list, columns=[
-            'video_id',
-            'video_title',
-            'chapter_title',
-            'chapter_url',
-            'published_date',
-            'chapter_start',
-        ])
-
-        data = chapter_search_df.to_dict(orient='records')
-
-        return render(request, 'app/keyword.html', {
-            'keyword': keyword,
-            'hit_number': len(data),
-            'data': data,
-            'search_start': search_start,
-            'search_end': search_end,
-            'items_count': items_count,
-        })
