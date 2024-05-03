@@ -80,23 +80,25 @@
           {% endif %}
         {% endfor %}
 
-        {% if page_data.number == max_page_number %}
-          <li class="page-item active">
-            <form action="{% url 'index' %}?page={{ max_page_number }}" method="post">
-              {% csrf_token %}
-              <input type="hidden" name="keyword" value="{{ keyword }}">
-              <button type="submit" class="page-link">{{ max_page_number }}</button>
-            </form>
-          </li>
-        {% else %}
-          <li class="page-item">
-            <form action="{% url 'index' %}?page={{ max_page_number }}" method="post">
-              {% csrf_token %}
-              <input type="hidden" name="keyword" value="{{ keyword }}">
-              <button type="submit" class="page-link">{{ max_page_number }}</button>
-            </form>
-          </li>
-        {% endif %}
+        {% if max_page_number != 1 %}
+          {% if page_data.number == max_page_number %}
+            <li class="page-item active">
+              <form action="{% url 'index' %}?page={{ max_page_number }}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="keyword" value="{{ keyword }}">
+                <button type="submit" class="page-link">{{ max_page_number }}</button>
+              </form>
+            </li>
+          {% else %}
+            <li class="page-item">
+              <form action="{% url 'index' %}?page={{ max_page_number }}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="keyword" value="{{ keyword }}">
+                <button type="submit" class="page-link">{{ max_page_number }}</button>
+              </form>
+            </li>
+          {% endif %}
+          {% endif %}
 
       </ul>
     </nav>
