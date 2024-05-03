@@ -23,7 +23,7 @@ class IndexView(View):
 
         chapter_all_list = ChapterInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'chapter_title', 'chapter_url', 'published_date', 'chapter_start')
         filtered_chapter = chapter_all_list.filter(chapter_title__icontains=keyword)
-        paginator = Paginator(filtered_chapter, 20)
+        paginator = Paginator(filtered_chapter, 15)
         page_str = request.GET.get('page')
         page = int(page_str) if page_str else 1
         page_data = paginator.page(page)
@@ -45,7 +45,7 @@ class GakuchoFatherView(View):
         keyword = "学長父"
         chapter_all_list = ChapterInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'chapter_title', 'chapter_url', 'published_date', 'chapter_start')
         filtered_chapter = chapter_all_list.filter(chapter_title__icontains=keyword)
-        paginator = Paginator(filtered_chapter, 20)
+        paginator = Paginator(filtered_chapter, 15)
         page_str = request.GET.get('page')
         page = int(page_str) if page_str else 1
         page_data = paginator.page(page)
