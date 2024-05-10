@@ -7,6 +7,7 @@ from .models import ChapterInfo
 import re
 from .forms import KeywordForm
 from django.core.paginator import Paginator
+import pandas as pd
 
 
 
@@ -113,6 +114,7 @@ def get_videoid_list(YOUTUBE_API, channel_id):
 '''
 VIDEOIDリストで得た'description'からチャプター情報(配信日、開始時間、タイトル)を一つずつ抽出
 '''
+'''
 def get_chapter_info(videoinfo_list):
     chapterinfo_dicts = {}
     # 'description'の文字列を取得
@@ -122,7 +124,6 @@ def get_chapter_info(videoinfo_list):
             id=videoinfo[0],
         )
         response = request.execute()
-        # print(response)
         chapterinfo = response['items'][0]['snippet']['description']
         # 'description'から開始時間とタイトルを抽出
         pattern = r"(\d{1,2}:\d{2}(?::\d{2})?)\s(.+?)(?=\s|$)" # 開始時間とタイトルを抽出する正規表現パターン
@@ -139,8 +140,45 @@ def get_chapter_info(videoinfo_list):
                 time_value = int(time_parts[0])*3600 + int(time_parts[1])*60 + int(time_parts[2]) # 秒数に変換
             time_str = str(time_value) # int型から文字列に変換
             chapterinfo_dict[title] = time_str # chapterinfo_dict = {チャプタータイトル: 秒数, チャプタータイトル: 秒数, ...}
-        chapterinfo_dicts[videoinfo[0]] =[videoinfo[1], chapterinfo_dict, videoinfo[2]] # chapterinfo_dicts = {id: [配信日, {チャプタータイトル: 秒数, ...}, 動画タイトル], ...}
+        chapterinfo_dicts[videoinfo[0]] = [videoinfo[1], chapterinfo_dict, videoinfo[2]] # chapterinfo_dicts = {id: [配信日, {チャプタータイトル: 秒数, ...}, 動画タイトル], ...}
     return chapterinfo_dicts
+'''
+
+
+'''
+VIDEOIDリストで得た'description'からチャプター情報(配信日、開始時間、タイトル)を一つずつ抽出
+'''
+def get_chapter_info(videoinfo_list):
+    chapterinfo_dicts = {}
+    # 'description'の文字列を取得
+    for videoinfo in videoinfo_list:
+        request = YOUTUBE_API.videos().list(
+            part='snippet',
+            id=videoinfo,
+        )
+        response = request.execute()
+        chapterinfo = response['items'][0]['snippet']['description']
+        # 'description'から開始時間とタイトルを抽出
+        pattern = r"(\d{1,2}:\d{2}(?::\d{2})?)\s(.+?)(?=\s|$)" # 開始時間とタイトルを抽出する正規表現パターン
+        matches = re.findall(pattern, chapterinfo) # 正規表現でマッチした'description'内の開始時間とタイトルを全て取得
+        chapterinfo_dict = {}
+        for match in matches: # matches = [(00:00, チャプタータイトル), (0:00:00, チャプタータイトル), ...]
+            title = match[1]
+            time = match[0]
+            time_parts = time.split(':') # 文字列を時と分と秒に分割
+            time_length = len(time_parts)
+            if time_length == 2: # 分と秒のみの場合(00:00)
+                time_value = int(time_parts[0])*60 + int(time_parts[1]) # 秒数に変換
+            else: # 時と分と秒の場合(0:00:00)
+                time_value = int(time_parts[0])*3600 + int(time_parts[1])*60 + int(time_parts[2]) # 秒数に変換
+            time_str = str(time_value) # int型から文字列に変換
+            chapterinfo_dict[title] = time_str # chapterinfo_dict = {チャプタータイトル: 秒数, チャプタータイトル: 秒数, ...}
+        published_date = response['items'][0]['snippet']['publishedAt']
+        title = response['items'][0]['snippet']['title']
+        chapterinfo_dicts[videoinfo] = [published_date, chapterinfo_dict, title] # chapterinfo_dicts = {id: [配信日, {チャプタータイトル: 秒数, ...}, 動画タイトル], ...}
+    return chapterinfo_dicts
+
+
 
 '''
 チャプターの開始時間を抽出して動画URLを作成
@@ -178,7 +216,8 @@ def add_database(df_data):
 '''
 class UpdateView(View):
     def get(self, request, *args, **kwargs):
-        videoinfo_list = get_videoid_list(YOUTUBE_API, channel_id)
+        # videoinfo_list = get_videoid_list(YOUTUBE_API, channel_id)
+        videoinfo_list = ["SL5LE9Oup9I", "ziyXd0kpx8s", "2dyinET55Q4", "GKcr6r7mqDc", "yLYG5ujExGc", "3XbVJB7DY8k", "EaE72FLQDhs", "c7a46ryiPZ8"]
         chapterinfo_dicts = get_chapter_info(videoinfo_list)
         df_data = get_chapter_url(chapterinfo_dicts)
         add_database(df_data)
