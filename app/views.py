@@ -16,7 +16,25 @@ import pandas as pd
 ---------------------------------------'''
 class IndexView(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'app/index.html')
+        # デフォルトのキーワードを設定
+        keyword = "お金のニュース"
+
+        # 検索ロジックを実行（postメソッドと同じロジック）
+        chapter_all_list = ChapterInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'chapter_title', 'chapter_url', 'published_date', 'chapter_start')
+        filtered_chapter = chapter_all_list.filter(chapter_title__icontains=keyword)
+        paginator = Paginator(filtered_chapter, 15)
+        page_str = request.GET.get('page')
+        page = int(page_str) if page_str else 1
+        page_data = paginator.page(page)
+        max_page_number = max(page_data.paginator.page_range)
+
+        return render(request, 'app/index.html', {
+            'keyword': keyword,
+            'hit_number': len(filtered_chapter),
+            'page': page,
+            'page_data': page_data,
+            'max_page_number': max_page_number,
+        })
 
 
     def post(self, request, *args, **kwargs):
