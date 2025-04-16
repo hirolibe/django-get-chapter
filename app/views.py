@@ -17,7 +17,7 @@ import pandas as pd
 class IndexView(View):
     def get(self, request, *args, **kwargs):
         # デフォルトのキーワードを設定
-        keyword = "お金のニュース"
+        keyword = "お金"
 
         # 検索ロジックを実行（postメソッドと同じロジック）
         chapter_all_list = ChapterInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'chapter_title', 'chapter_url', 'published_date', 'chapter_start')
