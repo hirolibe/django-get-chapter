@@ -23,7 +23,7 @@ URL: [https://django-render-fx8l.onrender.com](https://django-render-fx8l.onrend
 <br>
 
 ## 3. 画面操作
-
+![Image](https://github.com/user-attachments/assets/80174dd8-3735-4a2f-a74b-b2ac58926d80)
 
 <br><br>
 
@@ -32,9 +32,6 @@ URL: [https://django-render-fx8l.onrender.com](https://django-render-fx8l.onrend
 
 - Python
 - Django
-
-#### 【ライブラリ・ツール】
-
 
 #### 【インフラ】
 **◯ 開発環境**
