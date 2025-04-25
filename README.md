@@ -28,17 +28,8 @@ URL: [https://django-render-fx8l.onrender.com](https://django-render-fx8l.onrend
 <br><br>
 
 ## 4. 使用技術
-#### 【開発言語・フレームワーク】
-
-- Python
-- Django
-
-#### 【インフラ】
-**◯ 開発環境**
-- PostgreSQL
-
-<br>
-
-**◯ 本番環境**
-- Render
-- PostgreSQL
+- 開発言語：Python（3.8）
+- フレームワーク：Django（4.1）
+- データベース：SQLite
+- インフラ：Render
+- 開発ツール：Git/GitHub
