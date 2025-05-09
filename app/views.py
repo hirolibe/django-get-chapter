@@ -15,29 +15,29 @@ import pandas as pd
 動画検索画面
 ---------------------------------------'''
 class IndexView(View):
-    # def get(self, request, *args, **kwargs):
-#         # キーワードはデフォルトでNone（フィルターなし）
-#         keyword = None
+    def get(self, request, *args, **kwargs):
+        # キーワードはデフォルトでNone（フィルターなし）
+        keyword = None
 
-#         # 検索ロジックを実行
-#         video_all_list = VideoInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'video_url', 'published_date')
+        # 検索ロジックを実行
+        video_all_list = VideoInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'video_url', 'published_date')
 
-#         # キーワードがない場合はフィルタリングなし
-#         filtered_chapter = video_all_list
+        # キーワードがない場合はフィルタリングなし
+        filtered_chapter = video_all_list
 
-#         paginator = Paginator(filtered_chapter, 15)
-#         page_str = request.GET.get('page')
-#         page = int(page_str) if page_str else 1
-#         page_data = paginator.page(page)
-#         max_page_number = max(page_data.paginator.page_range)
+        paginator = Paginator(filtered_chapter, 15)
+        page_str = request.GET.get('page')
+        page = int(page_str) if page_str else 1
+        page_data = paginator.page(page)
+        max_page_number = max(page_data.paginator.page_range)
 
-#         return render(request, 'app/index.html', {
-#             'keyword': keyword,
-#             'hit_number': len(filtered_chapter),
-#             'page': page,
-#             'page_data': page_data,
-#             'max_page_number': max_page_number,
-#         })
+        return render(request, 'app/index.html', {
+            'keyword': keyword,
+            'hit_number': len(filtered_chapter),
+            'page': page,
+            'page_data': page_data,
+            'max_page_number': max_page_number,
+        })
 
 #     def post(self, request, *args, **kwargs):
 #         keyword = request.POST['keyword']
