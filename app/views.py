@@ -247,12 +247,12 @@ def get_chapter_url(chapterinfo_dicts):
 '''
 def add_database(df_data):
     for index, row in df_data.iterrows():
-        chapter_data = VideoInfo()
-        chapter_data.video_id = row['ID']
-        chapter_data.video_title = row['動画タイトル']
-        chapter_data.video_url = row['動画URL']
-        chapter_data.published_date = row['配信日']
-        chapter_data.save()
+        video_data = VideoInfo()
+        video_data.video_id = row['ID']
+        video_data.video_title = row['動画タイトル']
+        video_data.video_url = row['動画URL']
+        video_data.published_date = row['配信日']
+        video_data.save()
 
     for index, row in df_data.iterrows():
         chapter_data = ChapterInfo()
