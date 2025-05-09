@@ -14,8 +14,8 @@ import pandas as pd
 '''---------------------------------------
 動画検索画面
 ---------------------------------------'''
-# class IndexView(View):
-#     def get(self, request, *args, **kwargs):
+class IndexView(View):
+    def get(self, request, *args, **kwargs):
 #         # キーワードはデフォルトでNone（フィルターなし）
 #         keyword = None
 
