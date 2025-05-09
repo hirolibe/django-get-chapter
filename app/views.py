@@ -72,19 +72,22 @@ class IndexView(View):
 ---------------------------------------'''
 class ChapterView(View):
     def get(self, request, *args, **kwargs):
-        # デフォルトのキーワードを設定
-        keyword = "お金"
+        # キーワードはデフォルトでNone（フィルターなし）
+        keyword = None
 
-        # 検索ロジックを実行（postメソッドと同じロジック）
+        # 検索ロジックを実行
         chapter_all_list = ChapterInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'chapter_title', 'chapter_url', 'published_date', 'chapter_start')
-        filtered_chapter = chapter_all_list.filter(chapter_title__icontains=keyword)
+
+        # キーワードがない場合はフィルタリングなし
+        filtered_chapter = chapter_all_list
+
         paginator = Paginator(filtered_chapter, 15)
         page_str = request.GET.get('page')
         page = int(page_str) if page_str else 1
         page_data = paginator.page(page)
         max_page_number = max(page_data.paginator.page_range)
 
-        return render(request, 'app/chapter.html', {
+        return render(request, 'app/index.html', {
             'keyword': keyword,
             'hit_number': len(filtered_chapter),
             'page': page,
@@ -92,19 +95,25 @@ class ChapterView(View):
             'max_page_number': max_page_number,
         })
 
-
     def post(self, request, *args, **kwargs):
         keyword = request.POST['keyword']
 
         chapter_all_list = ChapterInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'chapter_title', 'chapter_url', 'published_date', 'chapter_start')
-        filtered_chapter = chapter_all_list.filter(chapter_title__icontains=keyword)
+
+        # キーワードがある場合のみフィルタリング
+        if keyword:
+            filtered_chapter = chapter_all_list.filter(chapter_title__icontains=keyword)
+        else:
+            # キーワードが空の場合はすべて表示
+            filtered_chapter = chapter_all_list
+
         paginator = Paginator(filtered_chapter, 15)
         page_str = request.GET.get('page')
         page = int(page_str) if page_str else 1
         page_data = paginator.page(page)
         max_page_number = max(page_data.paginator.page_range)
 
-        return render(request, 'app/chapter.html', {
+        return render(request, 'app/index.html', {
             'keyword': keyword,
             'hit_number': len(filtered_chapter),
             'page': page,
