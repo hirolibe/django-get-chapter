@@ -226,7 +226,7 @@ def get_chapter_info(videoinfo_list):
     return chapterinfo_dicts
 
 '''
-チャプターの開始時間を抽出して動画URLを作成
+チャプターの開始時間を抽出して動画URLとチャプター動画URLを作成
 '''
 def get_chapter_url(chapterinfo_dicts):
     data = []
@@ -237,22 +237,23 @@ def get_chapter_url(chapterinfo_dicts):
             published_date_jp = dt.datetime.fromisoformat(published_date.replace('Z', '+00:00'))+dt.timedelta(hours=9)
             # 必要な形式の文字列に変換
             formatted_date = published_date_jp.strftime('%Y-%m-%d')
-            url = f'https://www.youtube.com/embed/{id}?start={time}'
-            data.append([id, chapterinfo[2], chapter_title, url, formatted_date, time])
-    df_data = pd.DataFrame(data, columns=['ID', '動画タイトル', 'チャプタータイトル', 'チャプターURL', '配信日', 'チャプター開始時間'])
+            chapter_url = f'https://www.youtube.com/embed/{id}?start={time}'
+            video_url = f'https://www.youtube.com/embed/{id}'
+            data.append([id, chapterinfo[2], chapter_title, chapter_url, formatted_date, time, video_url])
+    df_data = pd.DataFrame(data, columns=['ID', '動画タイトル', 'チャプタータイトル', 'チャプターURL', '配信日', 'チャプター開始時間', '動画URL'])
     return df_data
 
 '''
 データベースをアップデート
 '''
 def add_database(df_data):
-    # for index, row in df_data.iterrows():
-    #     video_data = VideoInfo()
-    #     video_data.video_id = row['ID']
-    #     video_data.video_title = row['動画タイトル']
-    #     video_data.video_url = row['動画URL']
-    #     video_data.published_date = row['配信日']
-    #     video_data.save()
+    for index, row in df_data.iterrows():
+        video_data = VideoInfo()
+        video_data.video_id = row['ID']
+        video_data.video_title = row['動画タイトル']
+        video_data.video_url = row['動画URL']
+        video_data.published_date = row['配信日']
+        video_data.save()
 
     for index, row in df_data.iterrows():
         chapter_data = ChapterInfo()
