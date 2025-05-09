@@ -3,7 +3,7 @@ from django.views.generic import View
 from apiclient.discovery import build
 import datetime as dt
 from django.conf import settings
-from .models import ChapterInfo
+from .models import ChapterInfo, VideoInfo
 import re
 from .forms import KeywordForm
 from django.core.paginator import Paginator
@@ -12,9 +12,56 @@ import pandas as pd
 
 
 '''---------------------------------------
-キーワード検索画面
+動画検索画面
 ---------------------------------------'''
 class IndexView(View):
+    def get(self, request, *args, **kwargs):
+        # デフォルトのキーワードを設定
+        keyword = ""
+
+        # 検索ロジックを実行（postメソッドと同じロジック）
+        chapter_all_list = VideoInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'video_url', 'published_date')
+        filtered_video = chapter_all_list.filter(video_title__icontains=keyword)
+        paginator = Paginator(filtered_video, 15)
+        page_str = request.GET.get('page')
+        page = int(page_str) if page_str else 1
+        page_data = paginator.page(page)
+        max_page_number = max(page_data.paginator.page_range)
+
+        return render(request, 'app/index.html', {
+            'keyword': keyword,
+            'hit_number': len(filtered_video),
+            'page': page,
+            'page_data': page_data,
+            'max_page_number': max_page_number,
+        })
+
+
+    def post(self, request, *args, **kwargs):
+        keyword = request.POST['keyword']
+
+        chapter_all_list = VideoInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'video_url', 'published_date')
+        filtered_video = chapter_all_list.filter(video_title__icontains=keyword)
+        paginator = Paginator(filtered_video, 15)
+        page_str = request.GET.get('page')
+        page = int(page_str) if page_str else 1
+        page_data = paginator.page(page)
+        max_page_number = max(page_data.paginator.page_range)
+
+        return render(request, 'app/index.html', {
+            'keyword': keyword,
+            'hit_number': len(filtered_video),
+            'page': page,
+            'page_data': page_data,
+            'max_page_number': max_page_number,
+        })
+
+
+
+'''---------------------------------------
+チャプター検索画面
+---------------------------------------'''
+class SearchView(View):
     def get(self, request, *args, **kwargs):
         # デフォルトのキーワードを設定
         keyword = "お金"
@@ -28,7 +75,7 @@ class IndexView(View):
         page_data = paginator.page(page)
         max_page_number = max(page_data.paginator.page_range)
 
-        return render(request, 'app/index.html', {
+        return render(request, 'app/search.html', {
             'keyword': keyword,
             'hit_number': len(filtered_chapter),
             'page': page,
@@ -48,31 +95,7 @@ class IndexView(View):
         page_data = paginator.page(page)
         max_page_number = max(page_data.paginator.page_range)
 
-        return render(request, 'app/index.html', {
-            'keyword': keyword,
-            'hit_number': len(filtered_chapter),
-            'page': page,
-            'page_data': page_data,
-            'max_page_number': max_page_number,
-        })
-
-
-
-'''---------------------------------------
-学長父の動画リスト表示
----------------------------------------'''
-class GakuchoFatherView(View):
-    def get(self, request, *args, **kwargs):
-        keyword = "学長父"
-        chapter_all_list = ChapterInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'chapter_title', 'chapter_url', 'published_date', 'chapter_start')
-        filtered_chapter = chapter_all_list.filter(chapter_title__icontains=keyword)
-        paginator = Paginator(filtered_chapter, 15)
-        page_str = request.GET.get('page')
-        page = int(page_str) if page_str else 1
-        page_data = paginator.page(page)
-        max_page_number = max(page_data.paginator.page_range)
-
-        return render(request, 'app/index.html', {
+        return render(request, 'app/search.html', {
             'keyword': keyword,
             'hit_number': len(filtered_chapter),
             'page': page,
@@ -130,6 +153,22 @@ def get_videoid_list(YOUTUBE_API, channel_id):
     return videoinfo_list
 
 '''
+動画URLを作成
+'''
+def get_video_url(videoinfo_list):
+    data = []
+    for videoinfo in videoinfo_list: # videoinfo_list = [[videoId, publishedAt, title], [videoId, publishedAt, title], ...]
+        published_date = videoinfo[1]
+        # ISO 8601形式の日付文字列をdatetimeオブジェクトに変換
+        published_date_jp = dt.datetime.fromisoformat(published_date.replace('Z', '+00:00'))+dt.timedelta(hours=9)
+        # 必要な形式の文字列に変換
+        formatted_date = published_date_jp.strftime('%Y-%m-%d')
+        url = f'https://www.youtube.com/embed/{videoinfo[0]}'
+        data.append([videoinfo[0], videoinfo[2], url, formatted_date])
+    df_data = pd.DataFrame(data, columns=['ID', '動画タイトル', '動画URL', '配信日'])
+    return df_data
+
+'''
 VIDEOIDリストで得た'description'からチャプター情報(配信日、開始時間、タイトル)を一つずつ抽出
 '''
 def get_chapter_info(videoinfo_list):
@@ -180,7 +219,16 @@ def get_chapter_url(chapterinfo_dicts):
 '''
 データベースをアップデート
 '''
-def add_database(df_data):
+def add_video_database(df_data):
+    for index, row in df_data.iterrows():
+        video_data = VideoInfo()
+        video_data.video_id = row['ID']
+        video_data.video_title = row['動画タイトル']
+        video_data.video_url = row['動画URL']
+        video_data.published_date = row['配信日']
+        video_data.save()
+
+def add_chapter_database(df_data):
     for index, row in df_data.iterrows():
         chapter_data = ChapterInfo()
         chapter_data.video_id = row['ID']
@@ -197,8 +245,14 @@ def add_database(df_data):
 class UpdateView(View):
     def get(self, request, *args, **kwargs):
         videoinfo_list = get_videoid_list(YOUTUBE_API, channel_id)
+
+        # 動画URLをデータベースへ保存
+        video_df_data = get_video_url(videoinfo_list)
+        add_video_database(video_df_data)
+
+        # チャプターURLをデータベースへ保存
         chapterinfo_dicts = get_chapter_info(videoinfo_list)
-        df_data = get_chapter_url(chapterinfo_dicts)
-        add_database(df_data)
+        chapter_df_data = get_chapter_url(chapterinfo_dicts)
+        add_chapter_database(chapter_df_data)
 
         return redirect('index')
