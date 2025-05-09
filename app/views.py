@@ -265,8 +265,8 @@ class UpdateView(View):
     def get(self, request, *args, **kwargs):
         videoinfo_list = get_videoid_list(YOUTUBE_API, channel_id)
 
-        df_data = get_video_data(videoinfo_list)
-        add_video_database(df_data)
+        # df_data = get_video_data(videoinfo_list)
+        # add_video_database(df_data)
 
         chapterinfo_dicts = get_chapter_info(videoinfo_list)
         df_data = get_chapter_data(chapterinfo_dicts)
