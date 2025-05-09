@@ -2,7 +2,7 @@
 {% load widget_tweaks %}
 
 {% block content %}
-  <div>
+  <div class="mb-4">
     <h5 class="my-3">タイトル検索キーワード{% if keyword %} 「{{ keyword }}」{% endif %}</h5>
     {% if keyword %}<h5 class="my-3">検索結果：{{ hit_number }}件</h5>{% endif %}
     <form method="POST" action="{% url 'index' %}" class="d-flex mb-3">
@@ -10,7 +10,7 @@
       <input name="keyword" {% if keyword %}value="{{ keyword }}"{% endif %} style="height: 38px;" class="mr-1" placeholder="キーワードを入力">
       <button class="btn btn-primary mr-1" type="submit">検索</button>
     </form>
-    <a href="{% url 'chapter' %}" class="mb-4">チャプター検索ページへ移動</a>
+    <a href="{% url 'chapter' %}">チャプター検索ページへ移動</a>
   </div>
 
   {% for row in page_data.object_list %}
