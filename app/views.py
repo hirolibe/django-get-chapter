@@ -8,6 +8,8 @@ import re
 from .forms import KeywordForm
 from django.core.paginator import Paginator
 import pandas as pd
+import logging
+logger = logging.getLogger(__name__)
 
 
 
@@ -16,6 +18,8 @@ import pandas as pd
 ---------------------------------------'''
 class IndexView(View):
     def get(self, request, *args, **kwargs):
+        logger.info(f"GET request received with args={args}, kwargs={kwargs}")
+
         # キーワードはデフォルトでNone（フィルターなし）
         keyword = None
 
