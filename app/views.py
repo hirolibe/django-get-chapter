@@ -163,7 +163,7 @@ def get_video_url(videoinfo_list):
         published_date_jp = dt.datetime.fromisoformat(published_date.replace('Z', '+00:00'))+dt.timedelta(hours=9)
         # 必要な形式の文字列に変換
         formatted_date = published_date_jp.strftime('%Y-%m-%d')
-        url = f'https://www.youtube.com/embed/{id}'
+        url = f'https://www.youtube.com/embed/{videoinfo[0]}'
         data.append([videoinfo[0], videoinfo[2], url, formatted_date])
     df_data = pd.DataFrame(data, columns=['ID', '動画タイトル', '動画URL', '配信日'])
     return df_data
