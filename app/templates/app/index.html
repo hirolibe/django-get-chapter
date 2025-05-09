@@ -2,117 +2,107 @@
 {% load widget_tweaks %}
 
 {% block content %}
-  {% if keyword %}
-    <div>
-      <h5 class="mb-0 mr-3">タイトル検索キーワード「{{ keyword }}」</h5>
-      <h5 class="my-3">検索結果：{{ hit_number }}件</h5>
-      <form method="POST" action="{% url 'index' %}" class="d-flex mb-4">
-        {% csrf_token %}
-        <input name="keyword" value="{{ keyword }}" style="height: 38px;" class="mr-1">
-        <button class="btn btn-primary mr-1" type="submit">検索</button>
-      </form>
-      <a href="{% url 'chapter' %}">チャプター検索ページへ移動</a>
-    </div>
-    {% for row in page_data.object_list %}
-      <div class="card mb-2" style="border-bottom: 1px solid black; border-top: none; border-left: none; border-right: none;">
-        <div class="row g-0 align-items-center" style="height: 100%;">
-          <div class="col-md-4" style="height: 90%;">
-            <iframe src="{{ row.3 }}" allowfullscreen class="embed-responsive-item" style="width: 100%;"></iframe>
-          </div>
-          <div class="col-md-8">
-            <div class="card-body">
-              <p class="card-text">{{ row.1 }}</p>
-              <p class="card-text font-weight-bold">チャプタータイトル：{{ row.2 }}</p>
-              <p class="card-text"><small class="text-body-secondary">{{ row.4 }}</small></p>
-            </div>
+  <div>
+    <h5 class="my-3">タイトル検索キーワード{% if keyword %} 「{{ keyword }}」{% endif %}</h5>
+    {% if keyword %}<h5 class="my-3">検索結果：{{ hit_number }}件</h5>{% endif %}
+    <form method="POST" action="{% url 'index' %}" class="d-flex mb-3">
+      {% csrf_token %}
+      <input name="keyword" {% if keyword %}value="{{ keyword }}"{% endif %} style="height: 38px;" class="mr-1" placeholder="キーワードを入力">
+      <button class="btn btn-primary mr-1" type="submit">検索</button>
+    </form>
+    <a href="{% url 'chapter' %}" class="mb-4">チャプター検索ページへ移動</a>
+  </div>
+
+  {% for row in page_data.object_list %}
+    <div class="card mb-2" style="border-bottom: 1px solid black; border-top: none; border-left: none; border-right: none;">
+      <div class="row g-0 align-items-center" style="height: 100%;">
+        <div class="col-md-4" style="height: 90%;">
+          <iframe src="{{ row.3 }}" allowfullscreen class="embed-responsive-item" style="width: 100%;"></iframe>
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <p class="card-text">{{ row.1 }}</p>
+            <p class="card-text font-weight-bold">チャプタータイトル：{{ row.2 }}</p>
+            <p class="card-text"><small class="text-body-secondary">{{ row.4 }}</small></p>
           </div>
         </div>
       </div>
-    {% empty %}
-    <h5>検索にヒットした動画はありません</h5>
-    {% endfor %}
+    </div>
+  {% empty %}
+  <h5>表示できる動画はありません</h5>
+  {% endfor %}
 
-    <nav aria-label="Page navigation">
-      <ul class="pagination pagination-sm">
-        {% if page_data.number == 1 %}
+  {% if page_data.paginator.num_pages > 1 %}
+  <nav aria-label="Page navigation">
+    <ul class="pagination pagination-sm">
+      {% if page_data.number == 1 %}
+        <li class="page-item active">
+          <form action="{% url 'index' %}?page=1" method="post">
+            {% csrf_token %}
+            {% if keyword %}<input type="hidden" name="keyword" value="{{ keyword }}">{% endif %}
+            <button type="submit" class="page-link">1</button>
+          </form>
+        </li>
+      {% else %}
+        <li class="page-item">
+          <form action="{% url 'index' %}?page=1" method="post">
+            {% csrf_token %}
+            {% if keyword %}<input type="hidden" name="keyword" value="{{ keyword }}">{% endif %}
+            <button type="submit" class="page-link">1</button>
+          </form>
+        </li>
+      {% endif %}
+
+      {% for page in page_data.paginator.page_range %}
+        {% if page >= 2 and page <= max_page_number|add:-1 %}
+          {% if page == page_data.number %}
+            <li class="page-item active">
+              <form action="{% url 'index' %}?page={{ page }}" method="post">
+                {% csrf_token %}
+                {% if keyword %}<input type="hidden" name="keyword" value="{{ keyword }}">{% endif %}
+                <button type="submit" class="page-link">{{ page }}</button>
+              </form>
+            </li>
+          {% elif page_data.number >= 5 and page == 2 %}
+            <li class="page-item">
+              <div class="page-link">･･･</div>
+            </li>
+          {% elif page_data.number <= max_page_number|add:-4 and page == max_page_number|add:-1 %}
+            <li class="page-item">
+                <div class="page-link">･･･</div>
+            </li>
+          {% elif page >= page_data.number|add:-2 and page <= page_data.number|add:2 %}
+            <li class="page-item">
+              <form action="{% url 'index' %}?page={{ page }}" method="post">
+                {% csrf_token %}
+                {% if keyword %}<input type="hidden" name="keyword" value="{{ keyword }}">{% endif %}
+                <button type="submit" class="page-link">{{ page }}</button>
+              </form>
+            </li>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+
+      {% if max_page_number != 1 %}
+        {% if page_data.number == max_page_number %}
           <li class="page-item active">
-            <form action="{% url 'index' %}?page=1" method="post">
+            <form action="{% url 'index' %}?page={{ max_page_number }}" method="post">
               {% csrf_token %}
-              <input type="hidden" name="keyword" value="{{ keyword }}">
-              <button type="submit" class="page-link">1</button>
+              {% if keyword %}<input type="hidden" name="keyword" value="{{ keyword }}">{% endif %}
+              <button type="submit" class="page-link">{{ max_page_number }}</button>
             </form>
           </li>
         {% else %}
           <li class="page-item">
-            <form action="{% url 'index' %}?page=1" method="post">
+            <form action="{% url 'index' %}?page={{ max_page_number }}" method="post">
               {% csrf_token %}
-              <input type="hidden" name="keyword" value="{{ keyword }}">
-              <button type="submit" class="page-link">1</button>
+              {% if keyword %}<input type="hidden" name="keyword" value="{{ keyword }}">{% endif %}
+              <button type="submit" class="page-link">{{ max_page_number }}</button>
             </form>
           </li>
         {% endif %}
-
-        {% for page in page_data.paginator.page_range %}
-          {% if page >= 2 and page <= max_page_number|add:-1 %}
-            {% if page == page_data.number %}
-              <li class="page-item active">
-                <form action="{% url 'index' %}?page={{ page }}" method="post">
-                  {% csrf_token %}
-                  <input type="hidden" name="keyword" value="{{ keyword }}">
-                  <button type="submit" class="page-link">{{ page }}</button>
-                </form>
-              </li>
-            {% elif page_data.number >= 5 and page == 2 %}
-              <li class="page-item">
-                <div class="page-link">･･･</div>
-              </li>
-            {% elif page_data.number <= max_page_number|add:-4 and page == max_page_number|add:-1 %}
-              <li class="page-item">
-                  <div class="page-link">･･･</div>
-              </li>
-            {% elif page >= page_data.number|add:-2 and page <= page_data.number|add:2 %}
-              <li class="page-item">
-                <form action="{% url 'index' %}?page={{ page }}" method="post">
-                  {% csrf_token %}
-                  <input type="hidden" name="keyword" value="{{ keyword }}">
-                  <button type="submit" class="page-link">{{ page }}</button>
-                </form>
-              </li>
-            {% endif %}
-          {% endif %}
-        {% endfor %}
-
-        {% if max_page_number != 1 %}
-          {% if page_data.number == max_page_number %}
-            <li class="page-item active">
-              <form action="{% url 'index' %}?page={{ max_page_number }}" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="keyword" value="{{ keyword }}">
-                <button type="submit" class="page-link">{{ max_page_number }}</button>
-              </form>
-            </li>
-          {% else %}
-            <li class="page-item">
-              <form action="{% url 'index' %}?page={{ max_page_number }}" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="keyword" value="{{ keyword }}">
-                <button type="submit" class="page-link">{{ max_page_number }}</button>
-              </form>
-            </li>
-          {% endif %}
-        {% endif %}
-      </ul>
-    </nav>
-
-  {% else %}
-    <div>
-      <h5 class="my-3">検索キーワード</h5>
-      <form method="POST" action="{% url 'index' %}" class="d-flex mb-4">
-        {% csrf_token %}
-        <input name="keyword" style="height: 38px;" class="mr-1" placeholder="キーワードを入力">
-        <button class="btn btn-primary mr-1" type="submit">検索</button>
-      </form>
-    </div>
+      {% endif %}
+    </ul>
+  </nav>
   {% endif %}
-
 {% endblock %}

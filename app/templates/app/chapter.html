@@ -105,12 +105,13 @@
 
   {% else %}
     <div>
-      <h5 class="my-3">検索キーワード</h5>
+      <h5 class="my-3">チャプター検索キーワード</h5>
       <form method="POST" action="{% url 'chapter' %}" class="d-flex mb-4">
         {% csrf_token %}
         <input name="keyword" style="height: 38px;" class="mr-1" placeholder="キーワードを入力">
         <button class="btn btn-primary mr-1" type="submit">検索</button>
       </form>
+      <a href="{% url 'index' %}" class="mb-4">動画検索ページへ移動</a>
     </div>
   {% endif %}
 
