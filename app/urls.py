@@ -5,6 +5,6 @@ urlpatterns = [
     path("", views.IndexView.as_view(), name="index"),
     path("<int:page>", views.IndexView.as_view(), name="index"),
     path("search/", views.SearchView.as_view(), name="search"),
-    path("search/<str:query>/<int:page>", views.SearchView.as_view(), name="search"),
+    path("search/<int:page>", views.SearchView.as_view(), name="search"),
     path("update/", views.UpdateView.as_view(), name="update"),
 ]
