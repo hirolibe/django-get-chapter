@@ -266,4 +266,4 @@ class UpdateView(View):
         df_data = get_chapter_url(chapterinfo_dicts)
         add_database(df_data)
 
-        return redirect('index')
+        return redirect('index') 
