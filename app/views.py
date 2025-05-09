@@ -3,7 +3,7 @@ from django.views.generic import View
 from apiclient.discovery import build
 import datetime as dt
 from django.conf import settings
-from .models import ChapterInfo
+from .models import VideoInfo, ChapterInfo
 import re
 from .forms import KeywordForm
 from django.core.paginator import Paginator
@@ -246,6 +246,14 @@ def get_chapter_url(chapterinfo_dicts):
 データベースをアップデート
 '''
 def add_database(df_data):
+    for index, row in df_data.iterrows():
+        chapter_data = VideoInfo()
+        chapter_data.video_id = row['ID']
+        chapter_data.video_title = row['動画タイトル']
+        chapter_data.video_url = row['動画URL']
+        chapter_data.published_date = row['配信日']
+        chapter_data.save()
+
     for index, row in df_data.iterrows():
         chapter_data = ChapterInfo()
         chapter_data.video_id = row['ID']
