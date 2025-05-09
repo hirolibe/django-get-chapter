@@ -64,6 +64,7 @@ class IndexView(View):
 #             'page_data': page_data,
 #             'max_page_number': max_page_number,
 #         })
+      pass
 
 
 
