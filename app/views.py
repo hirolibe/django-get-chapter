@@ -87,7 +87,7 @@ class ChapterView(View):
         page_data = paginator.page(page)
         max_page_number = max(page_data.paginator.page_range)
 
-        return render(request, 'app/index.html', {
+        return render(request, 'app/chapter.html', {
             'keyword': keyword,
             'hit_number': len(filtered_chapter),
             'page': page,
@@ -113,7 +113,7 @@ class ChapterView(View):
         page_data = paginator.page(page)
         max_page_number = max(page_data.paginator.page_range)
 
-        return render(request, 'app/index.html', {
+        return render(request, 'app/chapter.html', {
             'keyword': keyword,
             'hit_number': len(filtered_chapter),
             'page': page,
