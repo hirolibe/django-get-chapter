@@ -4,7 +4,7 @@
 {% block content %}
   {% if keyword %}
     <div>
-      <h5 class="my-3">検索キーワード「{{ keyword }}」</h5>
+      <h5 class="my-3">チャプター検索キーワード「{{ keyword }}」</h5>
       <h5 class="my-3">検索結果：{{ hit_number }}件</h5>
       <form method="POST" action="{% url 'chapter' %}" class="d-flex mb-4">
         {% csrf_token %}

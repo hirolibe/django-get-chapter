@@ -4,16 +4,14 @@
 {% block content %}
   {% if keyword %}
     <div>
-      <div class="d-flex align-items-center my-3">
-        <h5 class="mb-0 mr-3">検索キーワード「{{ keyword }}」</h5>
-        <a href="{% url 'chapter' %}" class="btn btn-outline-secondary btn-sm">チャプター検索ページへ移動</a>
-      </div>
+      <h5 class="mb-0 mr-3">タイトル検索キーワード「{{ keyword }}」</h5>
       <h5 class="my-3">検索結果：{{ hit_number }}件</h5>
       <form method="POST" action="{% url 'index' %}" class="d-flex mb-4">
         {% csrf_token %}
         <input name="keyword" value="{{ keyword }}" style="height: 38px;" class="mr-1">
         <button class="btn btn-primary mr-1" type="submit">検索</button>
       </form>
+      <a href="{% url 'chapter' %}">チャプター検索ページへ移動</a>
     </div>
     {% for row in page_data.object_list %}
       <div class="card mb-2" style="border-bottom: 1px solid black; border-top: none; border-left: none; border-right: none;">
