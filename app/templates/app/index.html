@@ -4,7 +4,10 @@
 {% block content %}
   {% if keyword %}
     <div>
-      <h5 class="my-3">検索キーワード「{{ keyword }}」</h5>
+      <div class="d-flex align-items-center my-3">
+        <h5 class="mb-0 mr-3">検索キーワード「{{ keyword }}」</h5>
+        <a href="{% url 'chapter' %}" class="btn btn-outline-secondary btn-sm">チャプター検索ページへ移動</a>
+      </div>
       <h5 class="my-3">検索結果：{{ hit_number }}件</h5>
       <form method="POST" action="{% url 'index' %}" class="d-flex mb-4">
         {% csrf_token %}

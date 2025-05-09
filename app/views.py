@@ -61,7 +61,7 @@ class IndexView(View):
 '''---------------------------------------
 チャプター検索画面
 ---------------------------------------'''
-class SearchView(View):
+class ChapterView(View):
     def get(self, request, *args, **kwargs):
         # デフォルトのキーワードを設定
         keyword = "お金"
@@ -75,7 +75,7 @@ class SearchView(View):
         page_data = paginator.page(page)
         max_page_number = max(page_data.paginator.page_range)
 
-        return render(request, 'app/search.html', {
+        return render(request, 'app/chapter.html', {
             'keyword': keyword,
             'hit_number': len(filtered_chapter),
             'page': page,
@@ -95,7 +95,7 @@ class SearchView(View):
         page_data = paginator.page(page)
         max_page_number = max(page_data.paginator.page_range)
 
-        return render(request, 'app/search.html', {
+        return render(request, 'app/chapter.html', {
             'keyword': keyword,
             'hit_number': len(filtered_chapter),
             'page': page,
