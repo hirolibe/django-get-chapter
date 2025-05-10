@@ -246,7 +246,7 @@ def get_chapter_url(chapterinfo_dicts):
 '''
 データベースをアップデート
 '''
-def add_database(df_data):
+def add_video_database(df_data):
     for index, row in df_data.iterrows():
         if not VideoInfo.objects.filter(video_id=row['ID']).exists():
             video_data = VideoInfo()
@@ -256,6 +256,7 @@ def add_database(df_data):
             video_data.published_date = row['配信日']
             video_data.save()
 
+def add_chapter_database(df_data):
     for index, row in df_data.iterrows():
         chapter_data = ChapterInfo()
         chapter_data.video_id = row['ID']
@@ -273,7 +274,7 @@ class UpdateView(View):
     def get(self, request, *args, **kwargs):
         videoinfo_list = get_videoid_list(YOUTUBE_API, channel_id)
         chapterinfo_dicts = get_chapter_info(videoinfo_list)
-        df_data = get_chapter_url(chapterinfo_dicts)
-        add_database(df_data)
+        df_chapter_data = get_chapter_url(chapterinfo_dicts)
+        add_chapter_database(df_chapter_data)
 
         return redirect('index')
