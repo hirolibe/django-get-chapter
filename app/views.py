@@ -20,12 +20,12 @@ class IndexView(View):
         keyword = None
 
         # 検索ロジックを実行
-        chapter_all_list = ChapterInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'chapter_title', 'chapter_url', 'published_date', 'chapter_start')
+        video_all_list = VideoInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'published_date', 'video_url')
 
         # キーワードがない場合はフィルタリングなし
-        filtered_chapter = chapter_all_list
+        filtered_video = video_all_list
 
-        paginator = Paginator(filtered_chapter, 15)
+        paginator = Paginator(filtered_video, 15)
         page_str = request.GET.get('page')
         page = int(page_str) if page_str else 1
         page_data = paginator.page(page)
@@ -33,7 +33,7 @@ class IndexView(View):
 
         return render(request, 'app/index.html', {
             'keyword': keyword,
-            'hit_number': len(filtered_chapter),
+            'hit_number': len(filtered_video),
             'page': page,
             'page_data': page_data,
             'max_page_number': max_page_number,
@@ -42,16 +42,16 @@ class IndexView(View):
     def post(self, request, *args, **kwargs):
         keyword = request.POST['keyword']
 
-        chapter_all_list = ChapterInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'chapter_title', 'chapter_url', 'published_date', 'chapter_start')
+        video_all_list = VideoInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'published_date', 'video_url')
 
         # キーワードがある場合のみフィルタリング
         if keyword:
-            filtered_chapter = chapter_all_list.filter(chapter_title__icontains=keyword)
+            filtered_video = video_all_list.filter(video_title__icontains=keyword)
         else:
             # キーワードが空の場合はすべて表示
-            filtered_chapter = chapter_all_list
+            filtered_video = video_all_list
 
-        paginator = Paginator(filtered_chapter, 15)
+        paginator = Paginator(filtered_video, 15)
         page_str = request.GET.get('page')
         page = int(page_str) if page_str else 1
         page_data = paginator.page(page)
@@ -59,7 +59,7 @@ class IndexView(View):
 
         return render(request, 'app/index.html', {
             'keyword': keyword,
-            'hit_number': len(filtered_chapter),
+            'hit_number': len(filtered_video),
             'page': page,
             'page_data': page_data,
             'max_page_number': max_page_number,
@@ -250,14 +250,15 @@ def add_video_database(df_data):
 
 def add_chapter_database(df_data):
     for index, row in df_data.iterrows():
-        chapter_data = ChapterInfo()
-        chapter_data.video_id = row['ID']
-        chapter_data.video_title = row['動画タイトル']
-        chapter_data.chapter_title = row['チャプタータイトル']
-        chapter_data.chapter_url = row['チャプターURL']
-        chapter_data.published_date = row['配信日']
-        chapter_data.chapter_start = row['チャプター開始時間']
-        chapter_data.save()
+        if not ChapterInfo.objects.filter(video_id=row['ID']).exists():
+            chapter_data = ChapterInfo()
+            chapter_data.video_id = row['ID']
+            chapter_data.video_title = row['動画タイトル']
+            chapter_data.chapter_title = row['チャプタータイトル']
+            chapter_data.chapter_url = row['チャプターURL']
+            chapter_data.published_date = row['配信日']
+            chapter_data.chapter_start = row['チャプター開始時間']
+            chapter_data.save()
 
 '''
 メインコード
