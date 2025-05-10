@@ -124,30 +124,6 @@ class ChapterView(View):
 
 
 '''---------------------------------------
-学長父の動画リスト表示
----------------------------------------'''
-class GakuchoFatherView(View):
-    def get(self, request, *args, **kwargs):
-        keyword = "学長父"
-        chapter_all_list = ChapterInfo.objects.order_by('-published_date').distinct().values_list('video_id', 'video_title', 'chapter_title', 'chapter_url', 'published_date', 'chapter_start')
-        filtered_chapter = chapter_all_list.filter(chapter_title__icontains=keyword)
-        paginator = Paginator(filtered_chapter, 15)
-        page_str = request.GET.get('page')
-        page = int(page_str) if page_str else 1
-        page_data = paginator.page(page)
-        max_page_number = max(page_data.paginator.page_range)
-
-        return render(request, 'app/index.html', {
-            'keyword': keyword,
-            'hit_number': len(filtered_chapter),
-            'page': page,
-            'page_data': page_data,
-            'max_page_number': max_page_number,
-        })
-
-
-
-'''---------------------------------------
 データベースに最新の動画のチャプター情報を追加
 ---------------------------------------'''
 '''
@@ -195,6 +171,22 @@ def get_videoid_list(YOUTUBE_API, channel_id):
     return videoinfo_list
 
 '''
+VIDEOIDリストで得た'description'から動画情報(ID、動画タイトル、配信日)を一つずつ抽出し、動画URLを生成
+'''
+def get_video_data(videoinfo_list):
+    data = []
+    for id, videoinfo in videoinfo_list: # videoinfo_list = [[videoId, publishedAt, title], [videoId, publishedAt, title], ...]
+        published_date = videoinfo[1]
+        # ISO 8601形式の日付文字列をdatetimeオブジェクトに変換
+        published_date_jp = dt.datetime.fromisoformat(published_date.replace('Z', '+00:00'))+dt.timedelta(hours=9)
+        # 必要な形式の文字列に変換
+        formatted_date = published_date_jp.strftime('%Y-%m-%d')
+        video_url = f'https://www.youtube.com/embed/{videoinfo[0]}'
+        data.append([videoinfo[0], videoinfo[2], formatted_date, video_url])
+    df_data = pd.DataFrame(data, columns=['ID', '動画タイトル', '配信日', '動画URL'])
+    return df_data
+
+'''
 VIDEOIDリストで得た'description'からチャプター情報(配信日、開始時間、タイトル)を一つずつ抽出
 '''
 def get_chapter_info(videoinfo_list):
@@ -228,7 +220,7 @@ def get_chapter_info(videoinfo_list):
 '''
 チャプターの開始時間を抽出して動画URLとチャプター動画URLを作成
 '''
-def get_chapter_url(chapterinfo_dicts):
+def get_chapter_data(chapterinfo_dicts):
     data = []
     for id, chapterinfo in chapterinfo_dicts.items(): # chapterinfo_dicts = {id: [配信日, {チャプタータイトル: 秒数, ...}, 動画タイトル], ...}
         for chapter_title, time in chapterinfo[1].items(): # chapterinfo = [配信日, {チャプタータイトル: 秒数, ...}, 動画タイトル]
@@ -273,8 +265,12 @@ def add_chapter_database(df_data):
 class UpdateView(View):
     def get(self, request, *args, **kwargs):
         videoinfo_list = get_videoid_list(YOUTUBE_API, channel_id)
+
+        df_video_data = get_video_data(videoinfo_list)
+        add_video_database(df_video_data)
+
         chapterinfo_dicts = get_chapter_info(videoinfo_list)
-        df_chapter_data = get_chapter_url(chapterinfo_dicts)
+        df_chapter_data = get_chapter_data(chapterinfo_dicts)
         add_chapter_database(df_chapter_data)
 
         return redirect('index')
