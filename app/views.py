@@ -175,7 +175,7 @@ VIDEOIDリストで得た'description'から動画情報(ID、動画タイトル
 '''
 def get_video_data(videoinfo_list):
     data = []
-    for id, videoinfo in videoinfo_list: # videoinfo_list = [[videoId, publishedAt, title], [videoId, publishedAt, title], ...]
+    for videoinfo in videoinfo_list: # videoinfo_list = [[videoId, publishedAt, title], [videoId, publishedAt, title], ...]
         published_date = videoinfo[1]
         # ISO 8601形式の日付文字列をdatetimeオブジェクトに変換
         published_date_jp = dt.datetime.fromisoformat(published_date.replace('Z', '+00:00'))+dt.timedelta(hours=9)
