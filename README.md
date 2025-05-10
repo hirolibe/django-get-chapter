@@ -14,7 +14,7 @@ YouTubeのチャプタータイトルを検索して、ブラウザ上で動画�
 
 長時間かつ話題が多岐にわたる動画などで、知りたい話題について効率的に情報収集することができます。
 
-URL: [https://django-render-fx8l.onrender.com](https://django-render-fx8l.onrender.com/chapter/)
+URL: [https://django-render-fx8l.onrender.com/chapter/](https://django-render-fx8l.onrender.com/chapter/)
 <br><br>
 
 ## 2. 機能一覧
