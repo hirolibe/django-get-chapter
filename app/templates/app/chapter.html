@@ -3,7 +3,7 @@
 
 {% block content %}
   <div class="mb-4">
-    <h5 class="my-3">チャプター検索キーワード{% if keyword %} 「{{ keyword }}」{% endif %}</h5>
+    <h5 class="my-3">【非公式】チャプター検索キーワード{% if keyword %} 「{{ keyword }}」{% endif %}</h5>
     {% if keyword %}<h5 class="my-3">検索結果：{{ hit_number }}件</h5>{% endif %}
     <form method="POST" action="{% url 'index' %}" class="d-flex mb-3">
       {% csrf_token %}
