@@ -3,14 +3,14 @@
 
 {% block content %}
   <div class="mb-4">
-    <h5 class="my-3">【非公式】タイトル検索キーワード{% if keyword %} 「{{ keyword }}」{% endif %}</h5>
+    <h5 class="my-3">【非公式】チャプター検索キーワード{% if keyword %} 「{{ keyword }}」{% endif %}</h5>
     {% if keyword %}<h5 class="my-3">検索結果：{{ hit_number }}件</h5>{% endif %}
-    <form method="POST" action="{% url 'chapter' %}" class="d-flex mb-3">
+    <form method="POST" action="{% url 'index' %}" class="d-flex mb-3">
       {% csrf_token %}
       <input name="keyword" {% if keyword %}value="{{ keyword }}"{% endif %} style="height: 38px;" class="mr-1" placeholder="キーワードを入力">
       <button class="btn btn-primary mr-1" type="submit">検索</button>
     </form>
-    <a href="{% url 'chapter' %}">チャプター検索ページへ移動</a>
+    <a href="{% url 'index' %}">タイトル検索ページへ移動</a>
   </div>
 
   {% for row in page_data.object_list %}
@@ -21,8 +21,9 @@
         </div>
         <div class="col-md-8">
           <div class="card-body">
-            <p class="card-text font-weight-bold">タイトル：{{ row.1 }}</p>
-            <p class="card-text"><small class="text-body-secondary">{{ row.2 }}</small></p>
+            <p class="card-text">{{ row.1 }}</p>
+            <p class="card-text font-weight-bold">チャプタータイトル：{{ row.2 }}</p>
+            <p class="card-text"><small class="text-body-secondary">{{ row.4 }}</small></p>
           </div>
         </div>
       </div>
@@ -36,7 +37,7 @@
     <ul class="pagination pagination-sm">
       {% if page_data.number == 1 %}
         <li class="page-item active">
-          <form action="{% url 'index' %}?page=1" method="post">
+          <form action="{% url 'chapter' %}?page=1" method="post">
             {% csrf_token %}
             {% if keyword %}<input type="hidden" name="keyword" value="{{ keyword }}">{% endif %}
             <button type="submit" class="page-link">1</button>
@@ -44,7 +45,7 @@
         </li>
       {% else %}
         <li class="page-item">
-          <form action="{% url 'index' %}?page=1" method="post">
+          <form action="{% url 'chapter' %}?page=1" method="post">
             {% csrf_token %}
             {% if keyword %}<input type="hidden" name="keyword" value="{{ keyword }}">{% endif %}
             <button type="submit" class="page-link">1</button>
@@ -56,7 +57,7 @@
         {% if page >= 2 and page <= max_page_number|add:-1 %}
           {% if page == page_data.number %}
             <li class="page-item active">
-              <form action="{% url 'index' %}?page={{ page }}" method="post">
+              <form action="{% url 'chapter' %}?page={{ page }}" method="post">
                 {% csrf_token %}
                 {% if keyword %}<input type="hidden" name="keyword" value="{{ keyword }}">{% endif %}
                 <button type="submit" class="page-link">{{ page }}</button>
@@ -72,19 +73,20 @@
             </li>
           {% elif page >= page_data.number|add:-2 and page <= page_data.number|add:2 %}
             <li class="page-item">
-              <form action="{% url 'index' %}?page={{ page }}" method="post">
+              <form action="{% url 'chapter' %}?page={{ page }}" method="post">
                 {% csrf_token %}
                 {% if keyword %}<input type="hidden" name="keyword" value="{{ keyword }}">{% endif %}
                 <button type="submit" class="page-link">{{ page }}</button>
               </form>
             </li>
           {% endif %}
+        {% endif %}
       {% endfor %}
 
       {% if max_page_number != 1 %}
         {% if page_data.number == max_page_number %}
           <li class="page-item active">
-            <form action="{% url 'index' %}?page={{ max_page_number }}" method="post">
+            <form action="{% url 'chapter' %}?page={{ max_page_number }}" method="post">
               {% csrf_token %}
               {% if keyword %}<input type="hidden" name="keyword" value="{{ keyword }}">{% endif %}
               <button type="submit" class="page-link">{{ max_page_number }}</button>
@@ -92,7 +94,7 @@
           </li>
         {% else %}
           <li class="page-item">
-            <form action="{% url 'index' %}?page={{ max_page_number }}" method="post">
+            <form action="{% url 'chapter' %}?page={{ max_page_number }}" method="post">
               {% csrf_token %}
               {% if keyword %}<input type="hidden" name="keyword" value="{{ keyword }}">{% endif %}
               <button type="submit" class="page-link">{{ max_page_number }}</button>
