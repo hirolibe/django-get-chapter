@@ -133,17 +133,17 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-SUPERUSER_NAME = env("SUPERUSER_NAME", default="default")
-SUPERUSER_EMAIL = env("SUPERUSER_EMAIL", default="default")
-SUPERUSER_PASSWORD = env("SUPERUSER_PASSWORD", default="default")
+SUPERUSER_NAME = env("SUPERUSER_NAME")
+SUPERUSER_EMAIL = env("SUPERUSER_EMAIL")
+SUPERUSER_PASSWORD = env("SUPERUSER_PASSWORD")
 
-YOUTUBE_API_KEY = env("YOUTUBE_API_KEY", default="default")
+YOUTUBE_API_KEY = env("YOUTUBE_API_KEY")
 
-SECRET_KEY = env("SECRET_KEY", default="default")
+SECRET_KEY = env("SECRET_KEY")
 
-ALLOWED_HOSTS = [env("ALLOWED_HOSTS", default="default")]
+ALLOWED_HOSTS = [env("ALLOWED_HOSTS")]
 
-CLIENT_SECRETS_FILE = os.environ.get("GOOGLE_CLIENT_SECRETS_FILE", default="default")
+CLIENT_SECRETS_FILE = os.environ.get("GOOGLE_CLIENT_SECRETS_FILE")
 
 try:
     from .local_settings import *
